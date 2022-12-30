@@ -10,11 +10,20 @@
 	</parent>
 	<groupId>com.torresj</groupId>
 	<artifactId>unseen-auth</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>1.${revision}</version>
 	<name>unseen-auth</name>
 	<description>Authorization and Authentication microservice for Unseen</description>
 	<properties>
 		<java.version>17</java.version>
+		<revision>0.0-SNAPSHOT</revision>
+		<certificate-authority-data></certificate-authority-data>
+		<cluster></cluster>
+		<client-certificate-data></client-certificate-data>
+		<client-key-data></client-key-data>
+		<kubernetes-user></kubernetes-user>
+		<micrometer.version>1.10.2</micrometer.version>
+		<jib-maven-plugin.version>3.3.1</jib-maven-plugin.version>
+		<spring-cloud-config.version>4.0.0</spring-cloud-config.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -27,15 +36,74 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>io.micrometer</groupId>
+			<artifactId>micrometer-registry-prometheus</artifactId>
+			<version>${micrometer.version}</version>
+		</dependency>
+
+		<dependency>
+			<groupId>org.springframework.cloud</groupId>
+			<artifactId>spring-cloud-starter-config</artifactId>
+			<version>${spring-cloud-config.version}</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+			</resource>
+			<resource>
+				<directory>src/main/helm/</directory>
+				<filtering>true</filtering>
+				<targetPath>${project.basedir}/target/helm</targetPath>
+			</resource>
+		</resources>
 		<plugins>
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
+			<!-- Jib -->
+			<plugin>
+				<groupId>com.google.cloud.tools</groupId>
+				<artifactId>jib-maven-plugin</artifactId>
+				<version>${jib-maven-plugin.version}</version>
+				<configuration>
+					<container>
+						<ports>
+							<port>8080</port>
+						</ports>
+					</container>
+					<to>
+						<image>registry.torresj.com/unseen-auth:${project.version}</image>
+					</to>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>build</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
 		</plugins>
 	</build>
+
+	<scm>
+		<url>https://github.com/torresj/unseen-auth</url>
+		<tag>main</tag>
+		<connection>scm:git:ssh://git@github.com:torresj/unseen-auth.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com:torresj/unseen-auth.git</developerConnection>
+	</scm>
 
 </project>

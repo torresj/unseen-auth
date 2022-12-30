@@ -1,0 +1,28 @@
+# HTTP Server
+server:
+  port: 8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    health:
+      show-details: always
+
+#Server info
+info:
+  app:
+    name: ${spring.application.name}
+    description: Unseen Auth Service
+    groupId: com.torresj
+    artifactId: unseen-auth
+    version: ${APP_VERSION:SNAPSHOT}
+
+# Cloud config
+spring:
+  config:
+    import: optional:configserver:${SPRING_CLOUD_CONFIG_URL:}
+  application:
+    name: ${SPRING_APPLICATION_NAME:unseen-auth}
