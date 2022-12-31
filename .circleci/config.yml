@@ -62,7 +62,7 @@ jobs:
       # Install chart
       - run:
           name: Install chart
-          command: helm upgrade unseen-auth helm/unseen-auth -n unseen --set cloud.config.url=$CONFIG_URL_WITH_AUTH --install --kubeconfig=helm/kubeconfig
+          command: helm upgrade unseen-auth helm/unseen-auth -n unseen --set cloud.config.enabled=true,cloud.config.url=$CONFIG_URL_WITH_AUTH --install --kubeconfig=helm/kubeconfig
       # Check deployment
       - run:
           name: Check deployment
