@@ -23,6 +23,6 @@ info:
 # Cloud config
 spring:
   config:
-    import: optional:configserver:https://${SPRING_CLOUD_CONFIG_USERNAME:}:${SPRING_CLOUD_CONFIG_PASSWORD:}@${SPRING_CLOUD_CONFIG_URL:}
+    import: optional:configserver:${SPRING_CLOUD_CONFIG_URL:}
   application:
     name: ${SPRING_APPLICATION_NAME:unseen-auth}

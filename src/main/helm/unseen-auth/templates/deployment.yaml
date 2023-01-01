@@ -54,17 +54,7 @@ spec:
             - name: SPRING_CLOUD_CONFIG_ENABLED
               value: "true"
             - name: SPRING_CLOUD_CONFIG_URL
-              value: {{ .Values.cloud.config.url }}
-            - name: SPRING_CLOUD_CONFIG_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: spring-config-secret
-                  key: username
-            - name: SPRING_CLOUD_CONFIG_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: spring-config-secret
-                  key: password
+              value: "https://{{ .Values.cloud.config.username }}:{{ .Values.cloud.config.password }}@{{ .Values.cloud.config.url }}"
             {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
