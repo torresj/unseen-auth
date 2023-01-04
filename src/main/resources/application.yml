@@ -20,6 +20,10 @@ info:
     artifactId: unseen-auth
     version: ${APP_VERSION:SNAPSHOT}
 
+#Loggin
+logging:
+  config: classpath:logback-spring-prod.xml
+
 # Cloud config
 spring:
   config:

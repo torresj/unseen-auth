@@ -1,3 +1,7 @@
+#Loggin
+logging:
+  config: classpath:logback-spring-local.xml
+
 management:
   endpoints:
     web:
