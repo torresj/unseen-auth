@@ -1,3 +1,15 @@
 #Loggin
 logging:
   config: classpath:logback-spring-test.xml
+
+#JWT config
+jwt:
+  token:
+    secret: SecretKeyToGenJWTs
+    expiration: 86400000
+    prefix: Bearer
+    header: Authorization
+    issuer:
+      info: unseen
+    authorities:
+      key: authorities
