@@ -1,11 +1,14 @@
 package com.torresj.unseenauth.controllers;
 
+import com.torresj.unseenauth.dtos.AuthorizeRequestDTO;
+import com.torresj.unseenauth.dtos.AuthorizeResponseDTO;
 import com.torresj.unseenauth.dtos.LoginResponseDTO;
 import com.torresj.unseenauth.dtos.UnseenLoginDTO;
 import com.torresj.unseenauth.exceptions.InvalidPasswordException;
 import com.torresj.unseenauth.exceptions.UserInOtherProviderException;
 import com.torresj.unseenauth.exceptions.UserNotFoundException;
 import com.torresj.unseenauth.services.LoginService;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,19 +30,37 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<LoginResponseDTO> login(@RequestBody UnseenLoginDTO unseenLoginDTO){
         try{
-        log.info("[UNSEEN LOGIN] Login for user " + unseenLoginDTO.email());
+            log.info("[UNSEEN LOGIN] Login for user " + unseenLoginDTO.email());
 
-        String jwt = loginService.UnseenLogin(unseenLoginDTO);
+            String jwt = loginService.UnseenLogin(unseenLoginDTO);
 
-        log.info("[UNSEEN LOGIN] Login for user " + unseenLoginDTO.email() + " success");
-        return ResponseEntity.ok(new LoginResponseDTO(jwt,unseenLoginDTO.email()));
+            log.info("[UNSEEN LOGIN] Login for user " + unseenLoginDTO.email() + " success");
+            return ResponseEntity.ok(new LoginResponseDTO(jwt,unseenLoginDTO.email()));
 
         } catch (UserNotFoundException | InvalidPasswordException exception){
-            log.info("[UNSEEN LOGIN] Invalid credentials");
+            log.warn("[UNSEEN LOGIN] Invalid credentials");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
         } catch (UserInOtherProviderException exception){
-            log.info("[UNSEEN LOGIN] User already exists with other provider");
+            log.warn("[UNSEEN LOGIN] User already exists with other provider");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong provider");
+        } catch (JwtException exception) {
+            log.error("[UNSEEN LOGIN] JWT exception : " + exception.getMessage());
+            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED,exception.getMessage());
+        }
+    }
+
+    @PostMapping("/authorize")
+    public ResponseEntity<AuthorizeResponseDTO> authorize(@RequestBody AuthorizeRequestDTO authorizeRequestDTO){
+        try{
+            log.info("[UNSEEN AUTHORIZE] validating jwt "+ authorizeRequestDTO.jwt());
+
+            var authorizeResponseDTO = loginService.authorize(authorizeRequestDTO.jwt());
+
+            return ResponseEntity.ok(authorizeResponseDTO);
+
+        } catch (JwtException exception) {
+            log.error("[UNSEEN AUTHORIZE] JWT exception : " + exception.getMessage());
+            throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED,exception.getMessage());
         }
     }
 }

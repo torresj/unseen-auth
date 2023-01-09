@@ -1,6 +1,8 @@
 package com.torresj.unseenauth.services;
 
+import com.torresj.unseenauth.dtos.AuthorizeResponseDTO;
 import com.torresj.unseenauth.dtos.UnseenLoginDTO;
+import com.torresj.unseenauth.entities.Role;
 import com.torresj.unseenauth.exceptions.InvalidPasswordException;
 import com.torresj.unseenauth.exceptions.UserInOtherProviderException;
 import com.torresj.unseenauth.exceptions.UserNotFoundException;
@@ -30,5 +32,9 @@ public class LoginService {
 
         log.info("[LOGIN SERVICE] JWT generated = "+jwt);
         return jwt;
+    }
+
+    public AuthorizeResponseDTO authorize(String jwt){
+        return jwtService.validateJWT(jwt);
     }
 }

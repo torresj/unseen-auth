@@ -1,7 +1,9 @@
 package com.torresj.unseenauth.services;
 
+import com.torresj.unseenauth.dtos.AuthorizeResponseDTO;
 import com.torresj.unseenauth.entities.AuthProvider;
 import com.torresj.unseenauth.entities.Role;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -30,8 +32,7 @@ public class JwtService {
     @Value("${jwt.token.issuer.info}")
     private String issuer;
 
-    @Value("${jwt.token.authorities.key}")
-    private String authorities_key;
+    private String ROLE_KEY="role";
 
     private final String PROVIDER_KEY = "Provider";
 
@@ -42,9 +43,21 @@ public class JwtService {
                 .setIssuer(issuer)
                 .setSubject(email)
                 .setExpiration(new Date(System.currentTimeMillis()+ Long.parseLong(expiration)))
-                .claim(authorities_key, Arrays.asList("ROLE_"+role.name()))
+                .claim(ROLE_KEY, role.name())
                 .claim(PROVIDER_KEY, provider.name())
                 .signWith(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))
                 .compact();
+    }
+
+    public AuthorizeResponseDTO validateJWT(String jwt){
+        var claims = Jwts
+                .parserBuilder()
+                .setSigningKey(Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8)))
+                .build()
+                .parseClaimsJws(jwt.replace(prefix, ""))
+                .getBody();
+        String email = claims.getSubject();
+        String role = (String) claims.get(ROLE_KEY);
+        return new AuthorizeResponseDTO(email, Role.valueOf(role));
     }
 }

@@ -28,7 +28,7 @@ public class UserService {
     }
 
     public void updateUser(UserEntity user){
-        log.debug("[USER SERVICE] Updating user nonce and numLogins");
+        log.debug("[USER SERVICE] Updating user");
         userMutationRepository.save(user);
     }
 }
