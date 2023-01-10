@@ -20,7 +20,7 @@ public class LoginService {
             UserNotValidatedException, NonceAlreadyUsedException {
 
         //Getting user
-        var user = userService.validateAndGetUser(unseenLoginDTO.email(),unseenLoginDTO.password());
+        var user = userService.get(unseenLoginDTO.email(),unseenLoginDTO.password());
 
         //Validating user
         if(!user.isValidated()) throw new UserNotValidatedException();
@@ -34,7 +34,7 @@ public class LoginService {
         //Updating user
         user.setNumLogins(user.getNumLogins() + 1);
         user.setNonce(unseenLoginDTO.nonce());
-        userService.updateUser(user);
+        userService.update(user);
 
         log.debug("[LOGIN SERVICE] JWT generated = " + jwt);
         return jwt;

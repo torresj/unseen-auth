@@ -19,13 +19,13 @@ public class UserService {
     private final UserQueryRepository userQueryRepository;
     private final UserMutationRepository userMutationRepository;
 
-    public UserEntity validateAndGetUser(String email, String password) throws UserNotFoundException {
+    public UserEntity get(String email, String password) throws UserNotFoundException {
         log.debug("[USER SERVICE] Getting user by email " + email);
         var user = userQueryRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
         return user;
     }
 
-    public void updateUser(UserEntity user){
+    public void update(UserEntity user){
         log.debug("[USER SERVICE] Updating user");
         userMutationRepository.save(user);
     }
