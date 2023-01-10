@@ -3,7 +3,6 @@ package com.torresj.unseenauth.services;
 import com.torresj.unseenauth.dtos.AuthorizeResponseDTO;
 import com.torresj.unseenauth.entities.AuthProvider;
 import com.torresj.unseenauth.entities.Role;
-import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;
@@ -11,29 +10,24 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.Date;
 
 @Service
 @Slf4j
 public class JwtService {
 
-    @Value("${jwt.token.secret}")
-    private String secret;
-
-    @Value("${jwt.token.expiration}")
-    private String expiration;
-
-    @Value("${jwt.token.prefix}")
-    private String prefix;
-    @Value("${jwt.token.header}")
-    private String StringHeader;
-
-    @Value("${jwt.token.issuer.info}")
-    private String issuer;
-
+    public JwtService(@Value("${jwt.token.secret}") String secret, @Value("${jwt.token.expiration}")
+    String expiration, @Value("${jwt.token.prefix}") String prefix, @Value("${jwt.token.issuer.info}")  String issuer){
+        this.secret = secret;
+        this.expiration = expiration;
+        this.prefix = prefix;
+        this.issuer = issuer;
+    }
+    private final String secret;
+    private final String expiration;
+    private final String prefix;
+    private final String issuer;
     private String ROLE_KEY="role";
-
     private final String PROVIDER_KEY = "Provider";
 
     public String generateJWT(String email, AuthProvider provider, Role role){

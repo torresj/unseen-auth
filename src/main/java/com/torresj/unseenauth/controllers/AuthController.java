@@ -4,9 +4,7 @@ import com.torresj.unseenauth.dtos.AuthorizeRequestDTO;
 import com.torresj.unseenauth.dtos.AuthorizeResponseDTO;
 import com.torresj.unseenauth.dtos.LoginResponseDTO;
 import com.torresj.unseenauth.dtos.UnseenLoginDTO;
-import com.torresj.unseenauth.exceptions.InvalidPasswordException;
-import com.torresj.unseenauth.exceptions.UserInOtherProviderException;
-import com.torresj.unseenauth.exceptions.UserNotFoundException;
+import com.torresj.unseenauth.exceptions.*;
 import com.torresj.unseenauth.services.LoginService;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +41,12 @@ public class AuthController {
         } catch (UserInOtherProviderException exception){
             log.warn("[UNSEEN LOGIN] User already exists with other provider");
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong provider");
+        } catch (UserNotValidatedException exception){
+            log.warn("[UNSEEN LOGIN] User not validated");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not validated");
+        } catch (NonceAlreadyUsedException exception){
+            log.warn("[UNSEEN LOGIN] Nonce already used");
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Nonce already used");
         } catch (JwtException exception) {
             log.error("[UNSEEN LOGIN] JWT exception : " + exception.getMessage());
             throw  new ResponseStatusException(HttpStatus.UNAUTHORIZED,exception.getMessage());
