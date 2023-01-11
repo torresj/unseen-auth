@@ -12,16 +12,14 @@ import javax.sql.DataSource;
 @Profile("!test && !local")
 public class QueryDatasourceConfig {
 
-    @Bean
-    @ConfigurationProperties("spring.datasource.queries")
-    public DataSourceProperties queriesDataSourceProperties(){
-        return new DataSourceProperties();
-    }
+  @Bean
+  @ConfigurationProperties("spring.datasource.queries")
+  public DataSourceProperties queriesDataSourceProperties() {
+    return new DataSourceProperties();
+  }
 
-    @Bean
-    public DataSource queriesDataSource(){
-        return queriesDataSourceProperties()
-                .initializeDataSourceBuilder()
-                .build();
-    }
+  @Bean
+  public DataSource queriesDataSource() {
+    return queriesDataSourceProperties().initializeDataSourceBuilder().build();
+  }
 }

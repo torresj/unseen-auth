@@ -16,27 +16,27 @@ import org.springframework.context.annotation.Profile;
 @RequiredArgsConstructor
 public class DataBaseConfig {
 
-    private final UserMutationRepository userMutationRepository;
+  private final UserMutationRepository userMutationRepository;
 
-    @Bean
-    public void initDataBase() {
-        log.info("Init Local Data Base");
+  @Bean
+  public void initDataBase() {
+    log.info("Init Local Data Base");
 
-        //Test user
-        userMutationRepository.save(
-                new UserEntity(
-                        null,
-                        null,
-                        null,
-                        "test@test.com",
-                        "test", Role.ADMIN,
-                        null,
-                        "test",
-                        null,
-                        0,
-                        true,
-                        AuthProvider.UNSEEN,
-                        0)
-        );
-    }
+    // Test user
+    userMutationRepository.save(
+        new UserEntity(
+            null,
+            null,
+            null,
+            "test@test.com",
+            "test",
+            Role.ADMIN,
+            null,
+            "test",
+            null,
+            0,
+            true,
+            AuthProvider.UNSEEN,
+            0));
+  }
 }

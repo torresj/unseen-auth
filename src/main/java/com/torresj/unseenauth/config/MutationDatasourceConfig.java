@@ -13,18 +13,16 @@ import javax.sql.DataSource;
 @Profile("!test && !local")
 public class MutationDatasourceConfig {
 
-    @Bean
-    @Primary
-    @ConfigurationProperties("spring.datasource.mutations")
-    public DataSourceProperties mutationsDataSourceProperties(){
-        return new DataSourceProperties();
-    }
+  @Bean
+  @Primary
+  @ConfigurationProperties("spring.datasource.mutations")
+  public DataSourceProperties mutationsDataSourceProperties() {
+    return new DataSourceProperties();
+  }
 
-    @Bean
-    @Primary
-    public DataSource mutationsDataSource(){
-        return mutationsDataSourceProperties()
-                .initializeDataSourceBuilder()
-                .build();
-    }
+  @Bean
+  @Primary
+  public DataSource mutationsDataSource() {
+    return mutationsDataSourceProperties().initializeDataSourceBuilder().build();
+  }
 }

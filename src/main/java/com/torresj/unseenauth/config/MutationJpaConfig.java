@@ -22,36 +22,34 @@ import java.util.Objects;
 @Profile("!test && !local")
 @EnableTransactionManagement
 @EnableJpaRepositories(
-        basePackages = "com.torresj.unseenauth.repositories.mutations",
-        entityManagerFactoryRef = "mutationsEntityManagerFactory",
-        transactionManagerRef = "mutationsTransactionManager"
-)
+    basePackages = "com.torresj.unseenauth.repositories.mutations",
+    entityManagerFactoryRef = "mutationsEntityManagerFactory",
+    transactionManagerRef = "mutationsTransactionManager")
 public class MutationJpaConfig {
-    @Bean
-    @Primary
-    public LocalContainerEntityManagerFactoryBean mutationsEntityManagerFactory(
-            @Qualifier("mutationsDataSource") DataSource dataSource,
-            EntityManagerFactoryBuilder builder
-    ) {
-        return builder
-                .dataSource(dataSource)
-                .packages("com.torresj.unseenauth.entities")
-                .properties(jpaProperties())
-                .build();
-    }
+  @Bean
+  @Primary
+  public LocalContainerEntityManagerFactoryBean mutationsEntityManagerFactory(
+      @Qualifier("mutationsDataSource") DataSource dataSource,
+      EntityManagerFactoryBuilder builder) {
+    return builder
+        .dataSource(dataSource)
+        .packages("com.torresj.unseenauth.entities")
+        .properties(jpaProperties())
+        .build();
+  }
 
-    @Bean
-    @Primary
-    public PlatformTransactionManager mutationsTransactionManager(
-            @Qualifier("mutationsEntityManagerFactory") LocalContainerEntityManagerFactoryBean mutationsEntityManagerFactory
-    ){
-        return new JpaTransactionManager(Objects.requireNonNull(mutationsEntityManagerFactory.getObject()));
-    }
+  @Bean
+  @Primary
+  public PlatformTransactionManager mutationsTransactionManager(
+      @Qualifier("mutationsEntityManagerFactory")
+          LocalContainerEntityManagerFactoryBean mutationsEntityManagerFactory) {
+    return new JpaTransactionManager(
+        Objects.requireNonNull(mutationsEntityManagerFactory.getObject()));
+  }
 
-    protected Map<String, ?> jpaProperties(){
-        return Map.of(
-                "hibernate.physical_naming_strategy", CamelCaseToUnderscoresNamingStrategy.class.getName(),
-                "hibernate.implicit_naming_strategy", SpringImplicitNamingStrategy.class.getName()
-        );
-    }
+  protected Map<String, ?> jpaProperties() {
+    return Map.of(
+        "hibernate.physical_naming_strategy", CamelCaseToUnderscoresNamingStrategy.class.getName(),
+        "hibernate.implicit_naming_strategy", SpringImplicitNamingStrategy.class.getName());
+  }
 }
