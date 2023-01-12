@@ -5,8 +5,8 @@ logging:
 #JWT config
 jwt:
   token:
-    secret: SecretKeyToGenJWTs
-    expiration: 86400000
+    secret: SecretKeyToGenerateAJSONWebTokens
+    expiration: 10000
     prefix: Bearer
     header: Authorization
     issuer:
