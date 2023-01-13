@@ -98,7 +98,7 @@ class UnseenAuthApplicationTests {
     var result =
         mockMvc
             .perform(
-                MockMvcRequestBuilders.post("/v1/auth/dashboard")
+                MockMvcRequestBuilders.post("/v1/auth/dashboard/login")
                     .accept(MediaType.APPLICATION_JSON)
                     .contentType(MediaType.APPLICATION_JSON)
                     .content(objectMapper.writeValueAsString(unseenLoginDTO)))

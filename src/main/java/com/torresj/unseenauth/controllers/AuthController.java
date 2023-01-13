@@ -53,7 +53,7 @@ public class AuthController {
     }
   }
 
-  @PostMapping("/dashboard")
+  @PostMapping("/dashboard/login")
   public ResponseEntity<LoginResponseDTO> dashboardLogin(
       @RequestBody UnseenLoginDTO unseenLoginDTO) {
     try {
