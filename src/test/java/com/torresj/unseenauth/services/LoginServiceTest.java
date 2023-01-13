@@ -46,9 +46,39 @@ class LoginServiceTest {
     when(userService.get(email)).thenReturn(userEntityMock);
     when(jwtService.generateJWT(email, AuthProvider.UNSEEN, Role.ADMIN)).thenReturn("JWT");
 
-    String jwt = loginService.UnseenLogin(new UnseenLoginDTO(email, password, 223456789));
+    String jwt = loginService.unseenLogin(new UnseenLoginDTO(email, password, 223456789));
 
     Assertions.assertEquals("JWT", jwt);
+  }
+
+  @Test
+  @DisplayName("Valid Dashboard Login")
+  void validDashboardUnseenLogin()
+      throws UserNotFoundException, UserNotValidatedException, InvalidPasswordException,
+      NonceAlreadyUsedException, UserInOtherProviderException, UserNotAnAdminException {
+    UserEntity userEntityMock = generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN,true);
+
+    // Mocks
+    when(userService.get(email)).thenReturn(userEntityMock);
+    when(jwtService.generateJWT(email, AuthProvider.UNSEEN, Role.ADMIN)).thenReturn("JWT");
+
+    String jwt = loginService.dashboardLogin(new UnseenLoginDTO(email, password, 223456789));
+
+    Assertions.assertEquals("JWT", jwt);
+  }
+
+  @Test
+  @DisplayName("Dashboard Login with no admin user")
+  void noAdminUserDashboardUnseenLogin() throws UserNotFoundException {
+    UserEntity userEntityMock = generateUser(email, password, Role.USER, AuthProvider.UNSEEN,true);
+
+    // Mocks
+    when(userService.get(email)).thenReturn(userEntityMock);
+
+    Assertions.assertThrows(
+        UserNotAnAdminException.class,
+        () -> loginService.dashboardLogin(new UnseenLoginDTO(email, password, 223456789)),
+        "User not an Admin exception should be thrown");
   }
 
   @Test
@@ -61,7 +91,7 @@ class LoginServiceTest {
 
     Assertions.assertThrows(
         NonceAlreadyUsedException.class,
-        () -> loginService.UnseenLogin(new UnseenLoginDTO(email, password, 1)),
+        () -> loginService.unseenLogin(new UnseenLoginDTO(email, password, 1)),
         "Nonce exception should be thrown");
   }
 
@@ -73,7 +103,7 @@ class LoginServiceTest {
 
     Assertions.assertThrows(
         UserNotFoundException.class,
-        () -> loginService.UnseenLogin(new UnseenLoginDTO(email, password, 1)),
+        () -> loginService.unseenLogin(new UnseenLoginDTO(email, password, 1)),
         "User not found exception should be thrown");
   }
 
@@ -87,7 +117,7 @@ class LoginServiceTest {
 
     Assertions.assertThrows(
         InvalidPasswordException.class,
-        () -> loginService.UnseenLogin(new UnseenLoginDTO(email, password, 223456789)),
+        () -> loginService.unseenLogin(new UnseenLoginDTO(email, password, 223456789)),
         "Invalid password exception should be thrown");
   }
 
@@ -101,7 +131,7 @@ class LoginServiceTest {
 
     Assertions.assertThrows(
         UserInOtherProviderException.class,
-        () -> loginService.UnseenLogin(new UnseenLoginDTO(email, password, 223456789)),
+        () -> loginService.unseenLogin(new UnseenLoginDTO(email, password, 223456789)),
         "User in other provider exception should be thrown");
   }
 
@@ -115,7 +145,7 @@ class LoginServiceTest {
 
     Assertions.assertThrows(
         UserNotValidatedException.class,
-        () -> loginService.UnseenLogin(new UnseenLoginDTO(email, password, 223456789)),
+        () -> loginService.unseenLogin(new UnseenLoginDTO(email, password, 223456789)),
         "User not validated exception should be thrown");
   }
 

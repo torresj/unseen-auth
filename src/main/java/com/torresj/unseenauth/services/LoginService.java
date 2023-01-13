@@ -3,6 +3,7 @@ package com.torresj.unseenauth.services;
 import com.torresj.unseenauth.dtos.AuthorizeResponseDTO;
 import com.torresj.unseenauth.dtos.UnseenLoginDTO;
 import com.torresj.unseenauth.entities.AuthProvider;
+import com.torresj.unseenauth.entities.Role;
 import com.torresj.unseenauth.entities.UserEntity;
 import com.torresj.unseenauth.exceptions.*;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,7 @@ public class LoginService {
   private final UserService userService;
   private final JwtService jwtService;
 
-  public String UnseenLogin(UnseenLoginDTO unseenLoginDTO)
+  public String unseenLogin(UnseenLoginDTO unseenLoginDTO)
       throws UserNotFoundException, InvalidPasswordException, UserInOtherProviderException,
           UserNotValidatedException, NonceAlreadyUsedException {
 
@@ -33,6 +34,28 @@ public class LoginService {
     log.debug("[LOGIN SERVICE] JWT generated = " + jwt);
     return jwt;
   }
+
+  public String dashboardLogin(UnseenLoginDTO unseenLoginDTO)
+      throws UserNotFoundException, InvalidPasswordException, UserInOtherProviderException,
+      UserNotValidatedException, NonceAlreadyUsedException, UserNotAnAdminException {
+
+    // Validating user
+    log.debug("[LOGIN SERVICE] Validating user " + unseenLoginDTO.email());
+    UserEntity user = checkUser(unseenLoginDTO, AuthProvider.UNSEEN);
+
+    // Check role
+    if(!user.getRole().equals(Role.ADMIN)) throw new UserNotAnAdminException();
+
+    // generating JWT
+    String jwt = jwtService.generateJWT(user.getEmail(), user.getProvider(), user.getRole());
+
+    // Updating user
+    updateUser(user,unseenLoginDTO.nonce());
+
+    log.debug("[LOGIN SERVICE] JWT generated = " + jwt);
+    return jwt;
+  }
+
 
   public AuthorizeResponseDTO authorize(String jwt) {
     log.debug("[LOGIN SERVICE] Validating JWT = " + jwt);

@@ -30,7 +30,7 @@ public class AuthController {
     try {
       log.info("[UNSEEN LOGIN] Login for user " + unseenLoginDTO.email());
 
-      String jwt = loginService.UnseenLogin(unseenLoginDTO);
+      String jwt = loginService.unseenLogin(unseenLoginDTO);
 
       log.info("[UNSEEN LOGIN] Login for user " + unseenLoginDTO.email() + " success");
       return ResponseEntity.ok(new LoginResponseDTO(jwt, unseenLoginDTO.email()));
@@ -49,6 +49,38 @@ public class AuthController {
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Nonce already used");
     } catch (JwtException exception) {
       log.error("[UNSEEN LOGIN] JWT exception : " + exception.getMessage());
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, exception.getMessage());
+    }
+  }
+
+  @PostMapping("/dashboard")
+  public ResponseEntity<LoginResponseDTO> dashboardLogin(
+      @RequestBody UnseenLoginDTO unseenLoginDTO) {
+    try {
+      log.info("[UNSEEN DASHBOARD LOGIN] Login for user " + unseenLoginDTO.email());
+
+      String jwt = loginService.dashboardLogin(unseenLoginDTO);
+
+      log.info("[UNSEEN DASHBOARD LOGIN] Login for user " + unseenLoginDTO.email() + " success");
+      return ResponseEntity.ok(new LoginResponseDTO(jwt, unseenLoginDTO.email()));
+
+    } catch (UserNotFoundException | InvalidPasswordException exception) {
+      log.warn("[UNSEEN DASHBOARD LOGIN] Invalid credentials");
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+    } catch (UserInOtherProviderException exception) {
+      log.warn("[UNSEEN DASHBOARD LOGIN] User already exists with other provider");
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong provider");
+    } catch (UserNotAnAdminException exception) {
+      log.error("[UNSEEN DASHBOARD LOGIN] User is not Admin");
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User is not Admin");
+    } catch (UserNotValidatedException exception) {
+      log.warn("[UNSEEN DASHBOARD LOGIN] User not validated");
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not validated");
+    } catch (NonceAlreadyUsedException exception) {
+      log.warn("[UNSEEN DASHBOARD LOGIN] Nonce already used");
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Nonce already used");
+    } catch (JwtException exception) {
+      log.error("[UNSEEN DASHBOARD LOGIN] JWT exception : " + exception.getMessage());
       throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, exception.getMessage());
     }
   }

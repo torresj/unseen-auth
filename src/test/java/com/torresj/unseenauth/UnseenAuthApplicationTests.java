@@ -85,6 +85,41 @@ class UnseenAuthApplicationTests {
   }
 
   @Test
+  @DisplayName("Unseen Login integration test")
+  void dashboardUnseenLogin() throws Exception {
+    // Create a valid user in DB
+    UserEntity user =
+        userMutationRepository.save(generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true));
+
+    //Create request object
+    UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, password, 223456789);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/dashboard")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(unseenLoginDTO)))
+            .andExpect(status().isOk());
+    // Parsing response
+    var content = result.andReturn().getResponse().getContentAsString();
+    LoginResponseDTO response = objectMapper.readValue(content, LoginResponseDTO.class);
+
+    // Getting user from DB
+    UserEntity userDB = userQueryRepository.findByEmail(email).get();
+
+    // Checks
+    var authResponse = jwtService.validateJWT(response.jwt());
+    Assertions.assertEquals(email,authResponse.email());
+    Assertions.assertEquals(Role.ADMIN,authResponse.role());
+    Assertions.assertEquals(email, response.userName());
+    Assertions.assertEquals(user.getNumLogins() + 1, userDB.getNumLogins());
+    Assertions.assertEquals(unseenLoginDTO.nonce(), userDB.getNonce());
+  }
+
+  @Test
   @DisplayName("Unseen Login authorization test")
   void unseenLoginAuthorization() throws Exception {
     // Create a valid user in DB
