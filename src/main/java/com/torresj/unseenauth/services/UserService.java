@@ -17,11 +17,11 @@ public class UserService {
 
   public UserEntity get(String email) throws UserNotFoundException {
     log.debug("[USER SERVICE] Getting user by email " + email);
-    return  userQueryRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
+    return userQueryRepository.findByEmail(email).orElseThrow(UserNotFoundException::new);
   }
 
-  public void update(UserEntity user) {
-    log.debug("[USER SERVICE] Updating user");
+  public void save(UserEntity user) {
+    log.debug("[USER SERVICE] Saving user");
     userMutationRepository.save(user);
   }
 }

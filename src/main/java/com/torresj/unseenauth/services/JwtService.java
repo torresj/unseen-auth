@@ -20,8 +20,9 @@ public class JwtService {
   private final String expiration;
   private final String prefix;
   private final String issuer;
-  private final String PROVIDER_KEY = "Provider";
-  private final String ROLE_KEY = "role";
+  private static final String PROVIDER_KEY = "Provider";
+  private static final String ROLE_KEY = "role";
+
   public JwtService(
       @Value("${jwt.token.secret}") String secret,
       @Value("${jwt.token.expiration}") String expiration,

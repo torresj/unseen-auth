@@ -20,15 +20,11 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 class LoginServiceTest {
 
-  @Mock private UserService userService;
-
-  @Mock private JwtService jwtService;
-
-  private LoginService loginService;
-
   private final String email = "test@test.com";
-
   private final String password = "test";
+  @Mock private UserService userService;
+  @Mock private JwtService jwtService;
+  private LoginService loginService;
 
   @BeforeEach
   void setUp() {
@@ -40,7 +36,8 @@ class LoginServiceTest {
   void validUnseenLogin()
       throws UserNotFoundException, UserNotValidatedException, InvalidPasswordException,
           NonceAlreadyUsedException, UserInOtherProviderException {
-    UserEntity userEntityMock = generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN,true);
+    UserEntity userEntityMock =
+        generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true);
 
     // Mocks
     when(userService.get(email)).thenReturn(userEntityMock);
@@ -55,8 +52,9 @@ class LoginServiceTest {
   @DisplayName("Valid Dashboard Login")
   void validDashboardUnseenLogin()
       throws UserNotFoundException, UserNotValidatedException, InvalidPasswordException,
-      NonceAlreadyUsedException, UserInOtherProviderException, UserNotAnAdminException {
-    UserEntity userEntityMock = generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN,true);
+          NonceAlreadyUsedException, UserInOtherProviderException, UserNotAnAdminException {
+    UserEntity userEntityMock =
+        generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true);
 
     // Mocks
     when(userService.get(email)).thenReturn(userEntityMock);
@@ -70,7 +68,7 @@ class LoginServiceTest {
   @Test
   @DisplayName("Dashboard Login with no admin user")
   void noAdminUserDashboardUnseenLogin() throws UserNotFoundException {
-    UserEntity userEntityMock = generateUser(email, password, Role.USER, AuthProvider.UNSEEN,true);
+    UserEntity userEntityMock = generateUser(email, password, Role.USER, AuthProvider.UNSEEN, true);
 
     // Mocks
     when(userService.get(email)).thenReturn(userEntityMock);
@@ -84,7 +82,8 @@ class LoginServiceTest {
   @Test
   @DisplayName("Unseen Login with an invalid nonce")
   void invalidNonceUnseenLogin() throws UserNotFoundException {
-    UserEntity userEntityMock = generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN,true);
+    UserEntity userEntityMock =
+        generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true);
 
     // Mocks
     when(userService.get(email)).thenReturn(userEntityMock);
@@ -110,7 +109,7 @@ class LoginServiceTest {
   @Test
   @DisplayName("Unseen Login with an invalid password")
   void invalidPasswordUnseenLogin() throws UserNotFoundException {
-    UserEntity userEntityMock = generateUser(email, "", Role.ADMIN, AuthProvider.UNSEEN,true);
+    UserEntity userEntityMock = generateUser(email, "", Role.ADMIN, AuthProvider.UNSEEN, true);
 
     // Mocks
     when(userService.get(email)).thenReturn(userEntityMock);
@@ -124,7 +123,8 @@ class LoginServiceTest {
   @Test
   @DisplayName("Unseen Login with an invalid provider")
   void invalidProviderUnseenLogin() throws UserNotFoundException {
-    UserEntity userEntityMock = generateUser(email, password, Role.ADMIN, AuthProvider.GOOGLE,true);
+    UserEntity userEntityMock =
+        generateUser(email, password, Role.ADMIN, AuthProvider.GOOGLE, true);
 
     // Mocks
     when(userService.get(email)).thenReturn(userEntityMock);
@@ -138,7 +138,8 @@ class LoginServiceTest {
   @Test
   @DisplayName("Unseen Login with an user not validated yet")
   void userNotValidatedUnseenLogin() throws UserNotFoundException {
-    UserEntity userEntityMock = generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN,false);
+    UserEntity userEntityMock =
+        generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, false);
 
     // Mocks
     when(userService.get(email)).thenReturn(userEntityMock);
@@ -149,7 +150,8 @@ class LoginServiceTest {
         "User not validated exception should be thrown");
   }
 
-  private UserEntity generateUser(String email, String password, Role role, AuthProvider provider, boolean validated) {
+  private UserEntity generateUser(
+      String email, String password, Role role, AuthProvider provider, boolean validated) {
     return new UserEntity(
         1l,
         LocalDateTime.now(),

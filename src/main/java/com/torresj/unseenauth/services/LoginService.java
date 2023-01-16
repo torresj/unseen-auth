@@ -29,7 +29,7 @@ public class LoginService {
     String jwt = jwtService.generateJWT(user.getEmail(), user.getProvider(), user.getRole());
 
     // Updating user
-    updateUser(user,unseenLoginDTO.nonce());
+    updateUser(user, unseenLoginDTO.nonce());
 
     log.debug("[LOGIN SERVICE] JWT generated = " + jwt);
     return jwt;
@@ -37,25 +37,24 @@ public class LoginService {
 
   public String dashboardLogin(UnseenLoginDTO unseenLoginDTO)
       throws UserNotFoundException, InvalidPasswordException, UserInOtherProviderException,
-      UserNotValidatedException, NonceAlreadyUsedException, UserNotAnAdminException {
+          UserNotValidatedException, NonceAlreadyUsedException, UserNotAnAdminException {
 
     // Validating user
     log.debug("[LOGIN SERVICE] Validating user " + unseenLoginDTO.email());
     UserEntity user = checkUser(unseenLoginDTO, AuthProvider.UNSEEN);
 
     // Check role
-    if(!user.getRole().equals(Role.ADMIN)) throw new UserNotAnAdminException();
+    if (!user.getRole().equals(Role.ADMIN)) throw new UserNotAnAdminException();
 
     // generating JWT
     String jwt = jwtService.generateJWT(user.getEmail(), user.getProvider(), user.getRole());
 
     // Updating user
-    updateUser(user,unseenLoginDTO.nonce());
+    updateUser(user, unseenLoginDTO.nonce());
 
     log.debug("[LOGIN SERVICE] JWT generated = " + jwt);
     return jwt;
   }
-
 
   public AuthorizeResponseDTO authorize(String jwt) {
     log.debug("[LOGIN SERVICE] Validating JWT = " + jwt);
@@ -77,10 +76,10 @@ public class LoginService {
     return user;
   }
 
-  private void updateUser(UserEntity user, long nonce){
+  private void updateUser(UserEntity user, long nonce) {
     // Updating user
     user.setNumLogins(user.getNumLogins() + 1);
     user.setNonce(nonce);
-    userService.update(user);
+    userService.save(user);
   }
 }

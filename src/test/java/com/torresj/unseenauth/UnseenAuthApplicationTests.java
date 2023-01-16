@@ -31,32 +31,27 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UnseenAuthApplicationTests {
 
+  private final String email = "test@test.com";
+  private final String password = "test";
   @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
   private MockMvc mockMvc;
-
   @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
   private ObjectMapper objectMapper;
-
   @Autowired private UserMutationRepository userMutationRepository;
-
   @Autowired private UserQueryRepository userQueryRepository;
-
   @Autowired private JwtService jwtService;
-
-  private final String email = "test@test.com";
-
-  private final String password = "test";
 
   @Test
   @DisplayName("Unseen Login integration test")
   void unseenLogin() throws Exception {
     // Create a valid user in DB
     UserEntity user =
-        userMutationRepository.save(generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true));
+        userMutationRepository.save(
+            generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true));
 
-    //Create request object
+    // Create request object
     UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, password, 223456789);
 
     // Post /login
@@ -77,8 +72,8 @@ class UnseenAuthApplicationTests {
 
     // Checks
     var authResponse = jwtService.validateJWT(response.jwt());
-    Assertions.assertEquals(email,authResponse.email());
-    Assertions.assertEquals(Role.ADMIN,authResponse.role());
+    Assertions.assertEquals(email, authResponse.email());
+    Assertions.assertEquals(Role.ADMIN, authResponse.role());
     Assertions.assertEquals(email, response.userName());
     Assertions.assertEquals(user.getNumLogins() + 1, userDB.getNumLogins());
     Assertions.assertEquals(unseenLoginDTO.nonce(), userDB.getNonce());
@@ -89,9 +84,10 @@ class UnseenAuthApplicationTests {
   void dashboardUnseenLogin() throws Exception {
     // Create a valid user in DB
     UserEntity user =
-        userMutationRepository.save(generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true));
+        userMutationRepository.save(
+            generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true));
 
-    //Create request object
+    // Create request object
     UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, password, 223456789);
 
     // Post /login
@@ -112,8 +108,8 @@ class UnseenAuthApplicationTests {
 
     // Checks
     var authResponse = jwtService.validateJWT(response.jwt());
-    Assertions.assertEquals(email,authResponse.email());
-    Assertions.assertEquals(Role.ADMIN,authResponse.role());
+    Assertions.assertEquals(email, authResponse.email());
+    Assertions.assertEquals(Role.ADMIN, authResponse.role());
     Assertions.assertEquals(email, response.userName());
     Assertions.assertEquals(user.getNumLogins() + 1, userDB.getNumLogins());
     Assertions.assertEquals(unseenLoginDTO.nonce(), userDB.getNonce());
@@ -124,12 +120,13 @@ class UnseenAuthApplicationTests {
   void unseenLoginAuthorization() throws Exception {
     // Create a valid user in DB
     UserEntity user =
-        userMutationRepository.save(generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true));
+        userMutationRepository.save(
+            generateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true));
 
     // Create JWT
-    String jwt = jwtService.generateJWT(email,AuthProvider.UNSEEN,Role.ADMIN);
+    String jwt = jwtService.generateJWT(email, AuthProvider.UNSEEN, Role.ADMIN);
 
-    //Create request object
+    // Create request object
     AuthorizeRequestDTO requestDTO = new AuthorizeRequestDTO(jwt);
 
     // Post /login
@@ -146,8 +143,8 @@ class UnseenAuthApplicationTests {
     AuthorizeResponseDTO response = objectMapper.readValue(content, AuthorizeResponseDTO.class);
 
     // Checks
-    Assertions.assertEquals(email,response.email());
-    Assertions.assertEquals(Role.ADMIN,response.role());
+    Assertions.assertEquals(email, response.email());
+    Assertions.assertEquals(Role.ADMIN, response.role());
   }
 
   private UserEntity generateUser(
