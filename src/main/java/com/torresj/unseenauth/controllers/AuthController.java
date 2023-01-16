@@ -1,9 +1,6 @@
 package com.torresj.unseenauth.controllers;
 
-import com.torresj.unseenauth.dtos.AuthorizeRequestDTO;
-import com.torresj.unseenauth.dtos.AuthorizeResponseDTO;
-import com.torresj.unseenauth.dtos.LoginResponseDTO;
-import com.torresj.unseenauth.dtos.UnseenLoginDTO;
+import com.torresj.unseenauth.dtos.*;
 import com.torresj.unseenauth.exceptions.*;
 import com.torresj.unseenauth.services.LoginService;
 import io.jsonwebtoken.JwtException;
@@ -30,10 +27,10 @@ public class AuthController {
     try {
       log.info("[UNSEEN LOGIN] Login for user " + unseenLoginDTO.email());
 
-      String jwt = loginService.unseenLogin(unseenLoginDTO);
+      LoginResponseDTO response = loginService.unseenLogin(unseenLoginDTO);
 
       log.info("[UNSEEN LOGIN] Login for user " + unseenLoginDTO.email() + " success");
-      return ResponseEntity.ok(new LoginResponseDTO(jwt, unseenLoginDTO.email()));
+      return ResponseEntity.ok(response);
 
     } catch (UserNotFoundException | InvalidPasswordException exception) {
       log.warn("[UNSEEN LOGIN] Invalid credentials");
@@ -53,16 +50,50 @@ public class AuthController {
     }
   }
 
+  @PostMapping("/social/login")
+  public ResponseEntity<LoginResponseDTO> socialLogin(
+      @RequestBody AuthSocialTokenDTO authSocialTokenDTO) {
+    try {
+      log.info("[SOCIAL LOGIN] Social Login for " + authSocialTokenDTO.provider().name());
+
+      LoginResponseDTO response = loginService.socialLogin(authSocialTokenDTO);
+
+      log.info("[SOCIAL LOGIN] Login success");
+      return ResponseEntity.ok(response);
+
+    } catch (UserInOtherProviderException exception) {
+      log.warn("[SOCIAL LOGIN] User already exists with other provider");
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Wrong provider");
+    } catch (NonceAlreadyUsedException exception) {
+      log.warn("[SOCIAL LOGIN] Nonce already used");
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Nonce already used");
+    } catch (JwtException exception) {
+      log.error("[SOCIAL LOGIN] JWT exception : " + exception.getMessage());
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, exception.getMessage());
+    } catch (InvalidAccessTokenException exception) {
+      log.error("[SOCIAL LOGIN] Invalid access token");
+      throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, exception.getMessage());
+    } catch (SocialAPIException exception) {
+      log.error("[SOCIAL LOGIN] Error with Social provider API server");
+      throw new ResponseStatusException(
+          HttpStatus.UNAUTHORIZED, "Error with Social provider API server");
+    } catch (ProviderImplementationNotFoundException e) {
+      log.error("[SOCIAL LOGIN] Provider has not implementation yet");
+      throw new ResponseStatusException(
+          HttpStatus.UNAUTHORIZED, "Provider has not implementation yet");
+    }
+  }
+
   @PostMapping("/dashboard/login")
   public ResponseEntity<LoginResponseDTO> dashboardLogin(
       @RequestBody UnseenLoginDTO unseenLoginDTO) {
     try {
       log.info("[UNSEEN DASHBOARD LOGIN] Login for user " + unseenLoginDTO.email());
 
-      String jwt = loginService.dashboardLogin(unseenLoginDTO);
+      LoginResponseDTO response = loginService.dashboardLogin(unseenLoginDTO);
 
       log.info("[UNSEEN DASHBOARD LOGIN] Login for user " + unseenLoginDTO.email() + " success");
-      return ResponseEntity.ok(new LoginResponseDTO(jwt, unseenLoginDTO.email()));
+      return ResponseEntity.ok(response);
 
     } catch (UserNotFoundException | InvalidPasswordException exception) {
       log.warn("[UNSEEN DASHBOARD LOGIN] Invalid credentials");

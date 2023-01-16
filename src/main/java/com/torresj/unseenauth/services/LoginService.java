@@ -1,6 +1,8 @@
 package com.torresj.unseenauth.services;
 
+import com.torresj.unseenauth.dtos.AuthSocialTokenDTO;
 import com.torresj.unseenauth.dtos.AuthorizeResponseDTO;
+import com.torresj.unseenauth.dtos.LoginResponseDTO;
 import com.torresj.unseenauth.dtos.UnseenLoginDTO;
 import com.torresj.unseenauth.entities.AuthProvider;
 import com.torresj.unseenauth.entities.Role;
@@ -10,14 +12,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.Map;
+
 @Service
 @Slf4j
 @RequiredArgsConstructor
 public class LoginService {
   private final UserService userService;
   private final JwtService jwtService;
+  private final Map<String, AuthSocialLogin> authSocialLoginMap;
 
-  public String unseenLogin(UnseenLoginDTO unseenLoginDTO)
+  public LoginResponseDTO unseenLogin(UnseenLoginDTO unseenLoginDTO)
       throws UserNotFoundException, InvalidPasswordException, UserInOtherProviderException,
           UserNotValidatedException, NonceAlreadyUsedException {
 
@@ -32,10 +37,10 @@ public class LoginService {
     updateUser(user, unseenLoginDTO.nonce());
 
     log.debug("[LOGIN SERVICE] JWT generated = " + jwt);
-    return jwt;
+    return new LoginResponseDTO(jwt, user.getEmail());
   }
 
-  public String dashboardLogin(UnseenLoginDTO unseenLoginDTO)
+  public LoginResponseDTO dashboardLogin(UnseenLoginDTO unseenLoginDTO)
       throws UserNotFoundException, InvalidPasswordException, UserInOtherProviderException,
           UserNotValidatedException, NonceAlreadyUsedException, UserNotAnAdminException {
 
@@ -53,7 +58,22 @@ public class LoginService {
     updateUser(user, unseenLoginDTO.nonce());
 
     log.debug("[LOGIN SERVICE] JWT generated = " + jwt);
-    return jwt;
+    return new LoginResponseDTO(jwt, user.getEmail());
+  }
+
+  public LoginResponseDTO socialLogin(AuthSocialTokenDTO authToken)
+      throws InvalidAccessTokenException, SocialAPIException, NonceAlreadyUsedException,
+      UserInOtherProviderException, ProviderImplementationNotFoundException {
+    log.debug("[LOGIN SERVICE] Social login for " + authToken.provider().name());
+
+    // Check provider to use the correct auth implementation
+    AuthSocialLogin autService = authSocialLoginMap.get(authToken.provider().name());
+
+    // Check if provider implementation exists
+    if(autService == null) throw new ProviderImplementationNotFoundException();
+
+    // Sign in
+    return autService.signIn(authToken);
   }
 
   public AuthorizeResponseDTO authorize(String jwt) {

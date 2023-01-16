@@ -74,7 +74,7 @@ class UnseenAuthApplicationTests {
     var authResponse = jwtService.validateJWT(response.jwt());
     Assertions.assertEquals(email, authResponse.email());
     Assertions.assertEquals(Role.ADMIN, authResponse.role());
-    Assertions.assertEquals(email, response.userName());
+    Assertions.assertEquals(email, response.email());
     Assertions.assertEquals(user.getNumLogins() + 1, userDB.getNumLogins());
     Assertions.assertEquals(unseenLoginDTO.nonce(), userDB.getNonce());
   }
@@ -110,7 +110,7 @@ class UnseenAuthApplicationTests {
     var authResponse = jwtService.validateJWT(response.jwt());
     Assertions.assertEquals(email, authResponse.email());
     Assertions.assertEquals(Role.ADMIN, authResponse.role());
-    Assertions.assertEquals(email, response.userName());
+    Assertions.assertEquals(email, response.email());
     Assertions.assertEquals(user.getNumLogins() + 1, userDB.getNumLogins());
     Assertions.assertEquals(unseenLoginDTO.nonce(), userDB.getNonce());
   }

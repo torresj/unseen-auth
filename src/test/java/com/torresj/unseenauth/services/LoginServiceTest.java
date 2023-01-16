@@ -1,5 +1,6 @@
 package com.torresj.unseenauth.services;
 
+import com.torresj.unseenauth.dtos.LoginResponseDTO;
 import com.torresj.unseenauth.dtos.UnseenLoginDTO;
 import com.torresj.unseenauth.entities.AuthProvider;
 import com.torresj.unseenauth.entities.Role;
@@ -12,8 +13,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 import static org.mockito.Mockito.when;
 
@@ -24,11 +27,16 @@ class LoginServiceTest {
   private final String password = "test";
   @Mock private UserService userService;
   @Mock private JwtService jwtService;
+  @Mock private RestTemplate restTemplate;
   private LoginService loginService;
 
   @BeforeEach
   void setUp() {
-    loginService = new LoginService(userService, jwtService);
+    loginService =
+        new LoginService(
+            userService,
+            jwtService,
+            Map.of("GOOGLE", new GoogleService(restTemplate, userService, jwtService)));
   }
 
   @Test
@@ -43,9 +51,10 @@ class LoginServiceTest {
     when(userService.get(email)).thenReturn(userEntityMock);
     when(jwtService.generateJWT(email, AuthProvider.UNSEEN, Role.ADMIN)).thenReturn("JWT");
 
-    String jwt = loginService.unseenLogin(new UnseenLoginDTO(email, password, 223456789));
+    LoginResponseDTO response =
+        loginService.unseenLogin(new UnseenLoginDTO(email, password, 223456789));
 
-    Assertions.assertEquals("JWT", jwt);
+    Assertions.assertEquals("JWT", response.jwt());
   }
 
   @Test
@@ -60,9 +69,10 @@ class LoginServiceTest {
     when(userService.get(email)).thenReturn(userEntityMock);
     when(jwtService.generateJWT(email, AuthProvider.UNSEEN, Role.ADMIN)).thenReturn("JWT");
 
-    String jwt = loginService.dashboardLogin(new UnseenLoginDTO(email, password, 223456789));
+    LoginResponseDTO response =
+        loginService.dashboardLogin(new UnseenLoginDTO(email, password, 223456789));
 
-    Assertions.assertEquals("JWT", jwt);
+    Assertions.assertEquals("JWT", response.jwt());
   }
 
   @Test

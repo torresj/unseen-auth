@@ -1,6 +1,7 @@
 package com.torresj.unseenauth.services;
 
 import com.torresj.unseenauth.dtos.AuthSocialTokenDTO;
+import com.torresj.unseenauth.dtos.LoginResponseDTO;
 import com.torresj.unseenauth.dtos.google.EmailAddress;
 import com.torresj.unseenauth.dtos.google.Name;
 import com.torresj.unseenauth.dtos.google.People;
@@ -18,7 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-@Service
+@Service("GOOGLE")
 @Slf4j
 @RequiredArgsConstructor
 public class GoogleService implements AuthSocialLogin {
@@ -32,7 +33,7 @@ public class GoogleService implements AuthSocialLogin {
   private final JwtService jwtService;
 
   @Override
-  public String signIn(AuthSocialTokenDTO authToken)
+  public LoginResponseDTO signIn(AuthSocialTokenDTO authToken)
       throws InvalidAccessTokenException, SocialAPIException, UserInOtherProviderException,
           NonceAlreadyUsedException {
 
@@ -76,15 +77,14 @@ public class GoogleService implements AuthSocialLogin {
               .build());
     }
 
+    // Email
+    String email = userFromDB != null ? userFromDB.getEmail() : userFromGoogle.getEmail();
+
     // generating JWT
-    String jwt =
-        jwtService.generateJWT(
-            userFromDB != null ? userFromDB.getEmail() : userFromGoogle.getEmail(),
-            AuthProvider.GOOGLE,
-            Role.USER);
+    String jwt = jwtService.generateJWT(email, AuthProvider.GOOGLE, Role.USER);
 
     log.debug("[GOOGLE SERVICE] JWT generated = " + jwt);
-    return jwt;
+    return new LoginResponseDTO(jwt,email);
   }
 
   private UserEntity convertPeopleToUser(People people, long nonce) throws SocialAPIException {
