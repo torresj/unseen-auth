@@ -50,7 +50,7 @@ public class GoogleService implements AuthSocialLogin {
             googleUrl, HttpMethod.GET, new HttpEntity<String>(headers), People.class);
 
     // Check response from google
-    if (response == null || response.getStatusCode().value() != 200) throw new SocialAPIException();
+    if (response.getStatusCode().value() != 200) throw new SocialAPIException();
     if (response.getBody() == null) throw new InvalidAccessTokenException();
 
     // Create user
@@ -60,7 +60,7 @@ public class GoogleService implements AuthSocialLogin {
     UserEntity userFromDB = null;
     try {
       userFromDB = userService.get(userFromGoogle.getEmail());
-    } catch (UserNotFoundException exception) {
+    } catch (UserNotFoundException ignored) {
     }
 
     if (userFromDB == null) {
