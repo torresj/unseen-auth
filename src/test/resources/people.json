@@ -1,0 +1,47 @@
+{
+  "resourceName": "people/123456",
+  "etag": "%123412341234",
+  "names": [
+    {
+      "metadata": {
+        "primary": true,
+        "source": {
+          "type": "PROFILE",
+          "id": "123412341234"
+        },
+        "sourcePrimary": true
+      },
+      "displayName": "Test",
+      "familyName": "Test",
+      "givenName": "Test",
+      "displayNameLastFirst": "Test, Test",
+      "unstructuredName": "Test"
+    }
+  ],
+  "photos": [
+    {
+      "metadata": {
+        "primary": true,
+        "source": {
+          "type": "PROFILE",
+          "id": "12341234"
+        }
+      },
+      "url": "https://lh3.googleusercontent.com/a/123412341234"
+    }
+  ],
+  "emailAddresses": [
+    {
+      "metadata": {
+        "primary": true,
+        "verified": true,
+        "source": {
+          "type": "ACCOUNT",
+          "id": "123412341234"
+        },
+        "sourcePrimary": true
+      },
+      "value": "test@test.com"
+    }
+  ]
+}

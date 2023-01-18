@@ -10,8 +10,9 @@ import com.torresj.unseenauth.entities.AuthProvider;
 import com.torresj.unseenauth.entities.Role;
 import com.torresj.unseenauth.entities.UserEntity;
 import com.torresj.unseenauth.exceptions.*;
-import lombok.RequiredArgsConstructor;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -21,16 +22,17 @@ import org.springframework.web.client.RestTemplate;
 
 @Service("GOOGLE")
 @Slf4j
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class GoogleService implements AuthSocialLogin {
-  private static final String GOOGLE_URL =
-      "https://content-people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos";
 
   private final RestTemplate restTemplate;
 
   private final UserService userService;
 
   private final JwtService jwtService;
+
+  @Value("${social.login.google.url}")
+  private final String googleUrl;
 
   @Override
   public LoginResponseDTO signIn(AuthSocialTokenDTO authToken)
@@ -45,7 +47,7 @@ public class GoogleService implements AuthSocialLogin {
     headers.set("Authorization", "Bearer " + authToken.token());
     ResponseEntity<People> response =
         restTemplate.exchange(
-            GOOGLE_URL, HttpMethod.GET, new HttpEntity<String>(headers), People.class);
+            googleUrl, HttpMethod.GET, new HttpEntity<String>(headers), People.class);
 
     // Check response from google
     if (response == null || response.getStatusCode().value() != 200) throw new SocialAPIException();
@@ -84,7 +86,7 @@ public class GoogleService implements AuthSocialLogin {
     String jwt = jwtService.generateJWT(email, AuthProvider.GOOGLE, Role.USER);
 
     log.debug("[GOOGLE SERVICE] JWT generated = " + jwt);
-    return new LoginResponseDTO(jwt,email);
+    return new LoginResponseDTO(jwt, email);
   }
 
   private UserEntity convertPeopleToUser(People people, long nonce) throws SocialAPIException {

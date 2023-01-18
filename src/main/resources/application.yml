@@ -30,3 +30,9 @@ spring:
     import: optional:configserver:${SPRING_CLOUD_CONFIG_URL:}
   application:
     name: ${SPRING_APPLICATION_NAME:unseen-auth}
+
+# Social login
+social:
+  login:
+    google:
+      url: "https://content-people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos"

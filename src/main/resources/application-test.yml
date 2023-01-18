@@ -13,3 +13,9 @@ jwt:
       info: unseen
     authorities:
       key: authorities
+
+# Social login
+social:
+  login:
+    google:
+      url: "https://content-people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos"
