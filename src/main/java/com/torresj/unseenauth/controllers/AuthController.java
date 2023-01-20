@@ -4,6 +4,11 @@ import com.torresj.unseenauth.dtos.*;
 import com.torresj.unseenauth.exceptions.*;
 import com.torresj.unseenauth.services.LoginService;
 import io.jsonwebtoken.JwtException;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -22,8 +27,27 @@ public class AuthController {
 
   private final LoginService loginService;
 
+  @Operation(summary = "Login with user and password")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Login successful",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = LoginResponseDTO.class))
+            }),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+      })
   @PostMapping("/login")
-  public ResponseEntity<LoginResponseDTO> login(@RequestBody UnseenLoginDTO unseenLoginDTO) {
+  public ResponseEntity<LoginResponseDTO> login(
+      @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "Unseen login DTO with user and password",
+              required = true,
+              content = @Content(schema = @Schema(implementation = UnseenLoginDTO.class)))
+          @RequestBody
+          UnseenLoginDTO unseenLoginDTO) {
     try {
       log.info("[UNSEEN LOGIN] Login for user " + unseenLoginDTO.email());
 
@@ -50,9 +74,27 @@ public class AuthController {
     }
   }
 
+  @Operation(summary = "Login with OAuth token")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Login successful",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = LoginResponseDTO.class))
+            }),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+      })
   @PostMapping("/social/login")
   public ResponseEntity<LoginResponseDTO> socialLogin(
-      @RequestBody AuthSocialTokenDTO authSocialTokenDTO) {
+      @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "login DTO with OAuth token",
+              required = true,
+              content = @Content(schema = @Schema(implementation = AuthSocialTokenDTO.class)))
+          @RequestBody
+          AuthSocialTokenDTO authSocialTokenDTO) {
     try {
       log.info("[SOCIAL LOGIN] Social Login for " + authSocialTokenDTO.provider().name());
 
@@ -84,9 +126,27 @@ public class AuthController {
     }
   }
 
+  @Operation(summary = "Login for admin users in Unseen dashboard with user and password")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Login successful",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = LoginResponseDTO.class))
+            }),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+      })
   @PostMapping("/dashboard/login")
   public ResponseEntity<LoginResponseDTO> dashboardLogin(
-      @RequestBody UnseenLoginDTO unseenLoginDTO) {
+      @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "Unseen login DTO with user and password",
+              required = true,
+              content = @Content(schema = @Schema(implementation = UnseenLoginDTO.class)))
+          @RequestBody
+          UnseenLoginDTO unseenLoginDTO) {
     try {
       log.info("[UNSEEN DASHBOARD LOGIN] Login for user " + unseenLoginDTO.email());
 
@@ -116,9 +176,27 @@ public class AuthController {
     }
   }
 
+  @Operation(summary = "Authorize Unseen JWT token")
+  @ApiResponses(
+      value = {
+        @ApiResponse(
+            responseCode = "200",
+            description = "Authorized",
+            content = {
+              @Content(
+                  mediaType = "application/json",
+                  schema = @Schema(implementation = AuthorizeResponseDTO.class))
+            }),
+        @ApiResponse(responseCode = "401", description = "Unauthorized")
+      })
   @PostMapping("/authorize")
   public ResponseEntity<AuthorizeResponseDTO> authorize(
-      @RequestBody AuthorizeRequestDTO authorizeRequestDTO) {
+      @io.swagger.v3.oas.annotations.parameters.RequestBody(
+              description = "Unseen Authorization DTO with JWT to be verified",
+              required = true,
+              content = @Content(schema = @Schema(implementation = AuthorizeRequestDTO.class)))
+          @RequestBody
+          AuthorizeRequestDTO authorizeRequestDTO) {
     try {
       log.info("[UNSEEN AUTHORIZE] validating jwt " + authorizeRequestDTO.jwt());
 
