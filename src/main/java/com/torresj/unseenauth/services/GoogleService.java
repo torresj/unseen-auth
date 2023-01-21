@@ -54,7 +54,7 @@ public class GoogleService implements AuthSocialLogin {
     if (response.getBody() == null) throw new InvalidAccessTokenException();
 
     // Create user
-    UserEntity userFromGoogle = convertPeopleToUser(response.getBody(), authToken.nonce());
+    UserEntity userFromGoogle = convertPeopleToUserEntity(response.getBody(), authToken.nonce());
 
     // Get user from DB
     UserEntity userFromDB = null;
@@ -89,7 +89,8 @@ public class GoogleService implements AuthSocialLogin {
     return new LoginResponseDTO(jwt, email);
   }
 
-  private UserEntity convertPeopleToUser(People people, long nonce) throws SocialAPIException {
+  private UserEntity convertPeopleToUserEntity(People people, long nonce)
+      throws SocialAPIException {
     EmailAddress email =
         people.getEmailAddresses().stream()
             .filter(
