@@ -29,11 +29,12 @@ class LoginServiceTest {
   @Mock private UserService userService;
   @Mock private JwtService jwtService;
   @Mock private GoogleService googleService;
+  @Mock private FacebookService facebookService;
   private LoginService loginService;
 
   @BeforeEach
   void setUp() {
-    loginService = new LoginService(userService, jwtService, Map.of("GOOGLE", googleService));
+    loginService = new LoginService(userService, jwtService, Map.of("GOOGLE", googleService, "FACEBOOK", facebookService));
   }
 
   @Test
@@ -73,8 +74,8 @@ class LoginServiceTest {
   }
 
   @Test
-  @DisplayName("Valid Social Login")
-  void validSocialUnseenLogin()
+  @DisplayName("Valid Social Login with google")
+  void validSocialGoogleLogin()
       throws NonceAlreadyUsedException, UserInOtherProviderException, InvalidAccessTokenException,
           SocialAPIException, ProviderImplementationNotFoundException {
 
@@ -84,6 +85,22 @@ class LoginServiceTest {
     LoginResponseDTO response =
         loginService.socialLogin(
             new AuthSocialTokenDTO("accessToken", AuthProvider.GOOGLE, 12345678));
+
+    Assertions.assertEquals("JWT", response.jwt());
+  }
+
+  @Test
+  @DisplayName("Valid Social Login with facebook")
+  void validSocialFacebookLogin()
+          throws NonceAlreadyUsedException, UserInOtherProviderException, InvalidAccessTokenException,
+          SocialAPIException, ProviderImplementationNotFoundException {
+
+    // Mocks
+    when(facebookService.signIn(any())).thenReturn(new LoginResponseDTO("JWT", email));
+
+    LoginResponseDTO response =
+            loginService.socialLogin(
+                    new AuthSocialTokenDTO("accessToken", AuthProvider.FACEBOOK, 12345678));
 
     Assertions.assertEquals("JWT", response.jwt());
   }

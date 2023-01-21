@@ -11,6 +11,7 @@ import com.torresj.unseenauth.exceptions.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Map;
 
@@ -73,7 +74,12 @@ public class LoginService {
     if(autService == null) throw new ProviderImplementationNotFoundException();
 
     // Sign in
+    try{
     return autService.signIn(authToken);
+    } catch(HttpClientErrorException exception){
+      log.error("[LOGIN SERVICE] Error calling provider server: "+exception.getMessage());
+      throw new SocialAPIException();
+    }
   }
 
   public AuthorizeResponseDTO authorize(String jwt) {
