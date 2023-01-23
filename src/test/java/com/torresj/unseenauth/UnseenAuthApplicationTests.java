@@ -2,6 +2,8 @@ package com.torresj.unseenauth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.torresj.unseenauth.dtos.*;
+import com.torresj.unseenauth.dtos.facebook.FacebookUser;
+import com.torresj.unseenauth.dtos.facebook.Picture;
 import com.torresj.unseenauth.dtos.google.People;
 import com.torresj.unseenauth.entities.AuthProvider;
 import com.torresj.unseenauth.entities.Role;
@@ -44,6 +46,7 @@ class UnseenAuthApplicationTests {
   private static final String RESOURCE_PATH = "src/test/resources";
   private final String email = "test@test.com";
   private final String password = "test";
+
   @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
   private MockMvc mockMvc;
@@ -59,6 +62,12 @@ class UnseenAuthApplicationTests {
 
   @Value("${social.login.google.url}")
   private String googleUrl;
+
+  @Value("${social.login.facebook.url}")
+  private String facebookUrl;
+
+  @Value("${social.login.facebook.picture.url}")
+  private String facebookPictureUrl;
 
   private MockRestServiceServer mockServer;
 
@@ -234,6 +243,130 @@ class UnseenAuthApplicationTests {
     // Checks
     var authResponse = jwtService.validateJWT(response.jwt());
     Assertions.assertNotNull(userDB);
+    Assertions.assertEquals(email, authResponse.email());
+    Assertions.assertEquals(Role.USER, authResponse.role());
+    Assertions.assertEquals(email, response.email());
+    Assertions.assertEquals(authSocialTokenDTO.nonce(), userDB.getNonce());
+  }
+
+  @Test
+  @DisplayName("Facebook Login with an existing user integration test")
+  void facebookLogin() throws Exception {
+    // Mock restTemplate
+    mockServer = MockRestServiceServer.createServer(restTemplate);
+
+    // Create a valid user in DB
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.USER, AuthProvider.FACEBOOK, true));
+
+    // Create request object
+    AuthSocialTokenDTO authSocialTokenDTO =
+        new AuthSocialTokenDTO("JWT", AuthProvider.FACEBOOK, 323456789);
+
+    // Create a facebook responses
+    FacebookUser facebookUser =
+        objectMapper.readValue(new File(RESOURCE_PATH + "/facebookUser.json"), FacebookUser.class);
+    Picture picture =
+        objectMapper.readValue(new File(RESOURCE_PATH + "/facebookPicture.json"), Picture.class);
+
+    // Mock facebook server
+    mockServer
+        .expect(ExpectedCount.once(), requestTo(new URI(facebookUrl + authSocialTokenDTO.token())))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(
+            withStatus(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(mapper.writeValueAsString(facebookUser)));
+
+    mockServer
+        .expect(
+            ExpectedCount.once(),
+            requestTo(new URI(facebookPictureUrl + authSocialTokenDTO.token())))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(
+            withStatus(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(mapper.writeValueAsString(picture)));
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/social/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(authSocialTokenDTO)))
+            .andExpect(status().isOk());
+    // Parsing response
+    var content = result.andReturn().getResponse().getContentAsString();
+    LoginResponseDTO response = objectMapper.readValue(content, LoginResponseDTO.class);
+
+    // Getting user from DB
+    UserEntity userDB = userQueryRepository.findByEmail(email).get();
+
+    // Checks
+    var authResponse = jwtService.validateJWT(response.jwt());
+    Assertions.assertEquals(email, authResponse.email());
+    Assertions.assertEquals(Role.USER, authResponse.role());
+    Assertions.assertEquals(email, response.email());
+    Assertions.assertEquals(user.getNumLogins() + 1, userDB.getNumLogins());
+    Assertions.assertEquals(authSocialTokenDTO.nonce(), userDB.getNonce());
+  }
+
+  @Test
+  @DisplayName("Facebook Login with a new user integration test")
+  void newUserFacebookLogin() throws Exception {
+    // Mock restTemplate
+    mockServer = MockRestServiceServer.createServer(restTemplate);
+
+    // Create request object
+    AuthSocialTokenDTO authSocialTokenDTO =
+        new AuthSocialTokenDTO("JWT", AuthProvider.FACEBOOK, 323456789);
+
+    // Create a facebook responses
+    FacebookUser facebookUser =
+        objectMapper.readValue(new File(RESOURCE_PATH + "/facebookUser.json"), FacebookUser.class);
+    Picture picture =
+        objectMapper.readValue(new File(RESOURCE_PATH + "/facebookPicture.json"), Picture.class);
+
+    // Mock facebook server
+    mockServer
+        .expect(ExpectedCount.once(), requestTo(new URI(facebookUrl + authSocialTokenDTO.token())))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(
+            withStatus(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(mapper.writeValueAsString(facebookUser)));
+
+    mockServer
+        .expect(
+            ExpectedCount.once(),
+            requestTo(new URI(facebookPictureUrl + authSocialTokenDTO.token())))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(
+            withStatus(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(mapper.writeValueAsString(picture)));
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/social/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(authSocialTokenDTO)))
+            .andExpect(status().isOk());
+    // Parsing response
+    var content = result.andReturn().getResponse().getContentAsString();
+    LoginResponseDTO response = objectMapper.readValue(content, LoginResponseDTO.class);
+
+    // Getting user from DB
+    UserEntity userDB = userQueryRepository.findByEmail(email).get();
+
+    // Checks
+    var authResponse = jwtService.validateJWT(response.jwt());
     Assertions.assertEquals(email, authResponse.email());
     Assertions.assertEquals(Role.USER, authResponse.role());
     Assertions.assertEquals(email, response.email());

@@ -11,8 +11,6 @@ import com.torresj.unseenauth.exceptions.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -45,10 +43,7 @@ public class FacebookService implements AuthSocialLogin {
     // Call to Facebook GraphQL
     ResponseEntity<FacebookUser> response =
         restTemplate.exchange(
-            facebookUrl + authToken.token(),
-            HttpMethod.GET,
-            new HttpEntity<String>(new HttpHeaders()),
-            FacebookUser.class);
+            facebookUrl + authToken.token(), HttpMethod.GET, null, FacebookUser.class);
 
     // Check response from Facebook
     if (response.getStatusCode().value() != 200) throw new SocialAPIException();
@@ -98,11 +93,7 @@ public class FacebookService implements AuthSocialLogin {
 
   private Picture getPictureInBetterQuality(String token) throws SocialAPIException {
     ResponseEntity<Picture> response =
-        restTemplate.exchange(
-            facebookPictureUrl + token,
-            HttpMethod.GET,
-            new HttpEntity<String>(new HttpHeaders()),
-            Picture.class);
+        restTemplate.exchange(facebookPictureUrl + token, HttpMethod.GET, null, Picture.class);
 
     if (response.getStatusCode().value() != 200 || response.getBody() == null) {
       throw new SocialAPIException();

@@ -140,7 +140,7 @@ class GoogleServiceTest {
 
   @Test
   @DisplayName("Login with a google server error")
-  void googleServerError() throws UserNotFoundException, IOException {
+  void googleServerError() throws IOException {
     // Mock people
     People people = objectMapper.readValue(new File(RESOURCE_PATH + "/people.json"), People.class);
 
