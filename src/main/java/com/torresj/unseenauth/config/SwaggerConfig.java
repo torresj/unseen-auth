@@ -14,10 +14,9 @@ import org.springframework.context.annotation.Configuration;
 @AllArgsConstructor
 public class SwaggerConfig {
 
+  private static final String UUID_KEY = "UUID";
   @Value("${info.app.version}")
   private final String version;
-
-  private static final String UUID_KEY = "UUID";
 
   @Bean
   public OpenAPI springOpenAPI() {

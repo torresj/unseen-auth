@@ -64,20 +64,20 @@ public class LoginService {
 
   public LoginResponseDTO socialLogin(AuthSocialTokenDTO authToken)
       throws InvalidAccessTokenException, SocialAPIException, NonceAlreadyUsedException,
-      UserInOtherProviderException, ProviderImplementationNotFoundException {
+          UserInOtherProviderException, ProviderImplementationNotFoundException {
     log.debug("[LOGIN SERVICE] Social login for " + authToken.provider().name());
 
     // Check provider to use the correct auth implementation
     AuthSocialLogin autService = authSocialLoginMap.get(authToken.provider().name());
 
     // Check if provider implementation exists
-    if(autService == null) throw new ProviderImplementationNotFoundException();
+    if (autService == null) throw new ProviderImplementationNotFoundException();
 
     // Sign in
-    try{
-    return autService.signIn(authToken);
-    } catch(HttpClientErrorException exception){
-      log.error("[LOGIN SERVICE] Error calling provider server: "+exception.getMessage());
+    try {
+      return autService.signIn(authToken);
+    } catch (HttpClientErrorException exception) {
+      log.error("[LOGIN SERVICE] Error calling provider server: " + exception.getMessage());
       throw new SocialAPIException();
     }
   }

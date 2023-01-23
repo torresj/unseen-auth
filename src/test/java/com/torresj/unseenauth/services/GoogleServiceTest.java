@@ -32,11 +32,11 @@ class GoogleServiceTest {
   private final String email = "test@test.com";
   private final String password = "";
   private final String url = "https://google.com";
+  private final ObjectMapper objectMapper = new ObjectMapper();
   @Mock private UserService userService;
   @Mock private JwtService jwtService;
   @Mock private RestTemplate restTemplate;
   private GoogleService googleService;
-  private final ObjectMapper objectMapper = new ObjectMapper();
 
   @BeforeEach
   void setUp() {

@@ -41,11 +41,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class UnseenAuthApplicationTests {
 
+  private static final String RESOURCE_PATH = "src/test/resources";
   private final String email = "test@test.com";
   private final String password = "test";
-
-  private static final String RESOURCE_PATH = "src/test/resources";
-
   @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
   @Autowired
   private MockMvc mockMvc;
@@ -155,19 +153,20 @@ class UnseenAuthApplicationTests {
             GenerateUser(email, password, Role.USER, AuthProvider.GOOGLE, true));
 
     // Create request object
-    AuthSocialTokenDTO authSocialTokenDTO = new AuthSocialTokenDTO("JWT",AuthProvider.GOOGLE,323456789);
+    AuthSocialTokenDTO authSocialTokenDTO =
+        new AuthSocialTokenDTO("JWT", AuthProvider.GOOGLE, 323456789);
 
     // Create a google response
     People people = objectMapper.readValue(new File(RESOURCE_PATH + "/people.json"), People.class);
 
     // Mock google server
-    mockServer.expect(ExpectedCount.once(),
-            requestTo(new URI(googleUrl)))
+    mockServer
+        .expect(ExpectedCount.once(), requestTo(new URI(googleUrl)))
         .andExpect(method(HttpMethod.GET))
-        .andRespond(withStatus(HttpStatus.OK)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(mapper.writeValueAsString(people))
-        );
+        .andRespond(
+            withStatus(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(mapper.writeValueAsString(people)));
 
     // Post /login
     var result =
@@ -201,19 +200,20 @@ class UnseenAuthApplicationTests {
     mockServer = MockRestServiceServer.createServer(restTemplate);
 
     // Create request object
-    AuthSocialTokenDTO authSocialTokenDTO = new AuthSocialTokenDTO("JWT",AuthProvider.GOOGLE,323456789);
+    AuthSocialTokenDTO authSocialTokenDTO =
+        new AuthSocialTokenDTO("JWT", AuthProvider.GOOGLE, 323456789);
 
     // Create a google response
     People people = objectMapper.readValue(new File(RESOURCE_PATH + "/people.json"), People.class);
 
     // Mock google server
-    mockServer.expect(ExpectedCount.once(),
-            requestTo(new URI(googleUrl)))
+    mockServer
+        .expect(ExpectedCount.once(), requestTo(new URI(googleUrl)))
         .andExpect(method(HttpMethod.GET))
-        .andRespond(withStatus(HttpStatus.OK)
-            .contentType(MediaType.APPLICATION_JSON)
-            .body(mapper.writeValueAsString(people))
-        );
+        .andRespond(
+            withStatus(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(mapper.writeValueAsString(people)));
 
     // Post /login
     var result =

@@ -16,12 +16,12 @@ import java.util.Date;
 @Slf4j
 public class JwtService {
 
+  private static final String PROVIDER_KEY = "Provider";
+  private static final String ROLE_KEY = "role";
   private final String secret;
   private final String expiration;
   private final String prefix;
   private final String issuer;
-  private static final String PROVIDER_KEY = "Provider";
-  private static final String ROLE_KEY = "role";
 
   public JwtService(
       @Value("${jwt.token.secret}") String secret,
