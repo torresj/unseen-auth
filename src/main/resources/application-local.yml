@@ -46,3 +46,16 @@ management:
       enabled: true
     readinessState:
       enabled: true
+
+# Social login
+social:
+  login:
+    google:
+      url: "https://content-people.googleapis.com/v1/people/me?personFields=names,emailAddresses,photos"
+    facebook:
+      url: "https://graph.facebook.com/me?fields=name,first_name,last_name,email,picture&access_token="
+      picture:
+        url: "https://graph.facebook.com/me/picture?redirect=0&height=500&type=normal&width=500&access_token="
+    twitter:
+      consumerKey: ""
+      consumerSecret: ""
