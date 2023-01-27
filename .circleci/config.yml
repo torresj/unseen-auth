@@ -2,9 +2,6 @@
 # See: https://circleci.com/docs/2.0/configuration-reference
 version: 2.1
 
-orbs:
-  coveralls: coveralls/coveralls@1.0.6
-
 # Define a job to be invoked later in a workflow.
 # See: https://circleci.com/docs/2.0/configuration-reference/#jobs
 jobs:
@@ -35,7 +32,6 @@ jobs:
       - run:
           name: Test
           command: mvn test jacoco:report
-      - coveralls/upload
       # Save test report
       - run:
           name: Save test results
@@ -48,7 +44,7 @@ jobs:
       # Build
       - run:
           name: Build
-          command: mvn -Drevision=$REVISION -Dcertificate-authority-data=$CERTIFICATE_AUTHORITY_DATA -Dcluster=$CLUSTER -Dclient-certificate-data=$CLIENT_CERTIFICATE_DATA -Dclient-key-data=$CLIENT_KEY_DATA -Dkubernetes-user=$KUBERNETES_USER -DskipTests package
+          command: mvn -Drevision=$REVISION -Dcoveralls_repo_token=$COVERALLS_REPO_TOKEN -Dcertificate-authority-data=$CERTIFICATE_AUTHORITY_DATA -Dcluster=$CLUSTER -Dclient-certificate-data=$CLIENT_CERTIFICATE_DATA -Dclient-key-data=$CLIENT_KEY_DATA -Dkubernetes-user=$KUBERNETES_USER -DskipTests package
       # Persist build
       - persist_to_workspace:
           root: target
