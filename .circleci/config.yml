@@ -31,7 +31,7 @@ jobs:
       # Run test
       - run:
           name: Test
-          command: mvn test jacoco:report
+          command: mvn test jacoco:report coveralls:report
       # Save test report
       - run:
           name: Save test results
