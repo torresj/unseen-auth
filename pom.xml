@@ -30,6 +30,7 @@
 		<mariadb-client.version>3.1.0</mariadb-client.version>
 		<springdoc-openapi.version>2.0.2</springdoc-openapi.version>
 		<spring-social-twitter.version>1.1.2.RELEASE</spring-social-twitter.version>
+		<jacoco-maven-plugin.version>0.8.7</jacoco-maven-plugin.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -167,6 +168,19 @@
 						<phase>package</phase>
 						<goals>
 							<goal>build</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>${jacoco-maven-plugin.version}</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
 						</goals>
 					</execution>
 				</executions>
