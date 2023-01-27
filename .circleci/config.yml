@@ -44,7 +44,7 @@ jobs:
       # Build
       - run:
           name: Build
-          command: mvn -Drevision=$REVISION -Dcoveralls_repo_token=$COVERALLS_REPO_TOKEN -Dcertificate-authority-data=$CERTIFICATE_AUTHORITY_DATA -Dcluster=$CLUSTER -Dclient-certificate-data=$CLIENT_CERTIFICATE_DATA -Dclient-key-data=$CLIENT_KEY_DATA -Dkubernetes-user=$KUBERNETES_USER -DskipTests package
+          command: mvn -Drevision=$REVISION -Dcertificate-authority-data=$CERTIFICATE_AUTHORITY_DATA -Dcluster=$CLUSTER -Dclient-certificate-data=$CLIENT_CERTIFICATE_DATA -Dclient-key-data=$CLIENT_KEY_DATA -Dkubernetes-user=$KUBERNETES_USER -DskipTests package
       # Persist build
       - persist_to_workspace:
           root: target

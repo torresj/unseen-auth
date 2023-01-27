@@ -21,7 +21,6 @@
 		<client-certificate-data></client-certificate-data>
 		<client-key-data></client-key-data>
 		<kubernetes-user></kubernetes-user>
-		<coveralls_repo_token></coveralls_repo_token>
 		<micrometer.version>1.10.2</micrometer.version>
 		<jib-maven-plugin.version>3.3.1</jib-maven-plugin.version>
 		<spring-cloud-config.version>4.0.0</spring-cloud-config.version>
@@ -192,7 +191,7 @@
 				<artifactId>coveralls-maven-plugin</artifactId>
 				<version>${coveralls-maven-plugin.version}</version>
 				<configuration>
-					<repoToken>${coveralls_repo_token}</repoToken>
+					<repoToken>${env.COVERALLS_REPO_TOKE}</repoToken>
 				</configuration>
 				<dependencies>
 					<dependency>
