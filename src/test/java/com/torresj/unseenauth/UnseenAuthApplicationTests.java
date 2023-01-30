@@ -71,7 +71,7 @@ class UnseenAuthApplicationTests {
 
   private MockRestServiceServer mockServer;
 
-  private ObjectMapper mapper = new ObjectMapper();
+  private final ObjectMapper mapper = new ObjectMapper();
 
   @BeforeEach
   public void init() {
@@ -79,7 +79,7 @@ class UnseenAuthApplicationTests {
   }
 
   @Test
-  @DisplayName("Unseen Login integration test")
+  @DisplayName("Unseen valid login")
   void unseenLogin() throws Exception {
     // Create a valid user in DB
     UserEntity user =
@@ -112,6 +112,131 @@ class UnseenAuthApplicationTests {
     Assertions.assertEquals(email, response.email());
     Assertions.assertEquals(user.getNumLogins() + 1, userDB.getNumLogins());
     Assertions.assertEquals(unseenLoginDTO.nonce(), userDB.getNonce());
+  }
+
+  @Test
+  @DisplayName("Unseen Login with user not found")
+  void unseenLoginWithUserNotFound() throws Exception {
+    // Create request object
+    UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, password, 223456789);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(unseenLoginDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Invalid credentials", error);
+  }
+
+  @Test
+  @DisplayName("Unseen Login with bad credentials")
+  void unseenLoginWithInvalidPassword() throws Exception {
+
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true));
+
+    // Create request object
+    UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, "wrongPassword", 223456789);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(unseenLoginDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Invalid credentials", error);
+  }
+
+  @Test
+  @DisplayName("Unseen Login with wrong provider")
+  void unseenLoginWithWrongProvider() throws Exception {
+
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.ADMIN, AuthProvider.GOOGLE, true));
+
+    // Create request object
+    UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, password, 223456789);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(unseenLoginDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Wrong provider", error);
+  }
+
+  @Test
+  @DisplayName("Unseen Login with user not validated")
+  void unseenLoginWithUserNotValidated() throws Exception {
+
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, false));
+
+    // Create request object
+    UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, password, 223456789);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(unseenLoginDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("User not validated", error);
+  }
+
+  @Test
+  @DisplayName("Unseen Login with nonce already used")
+  void unseenLoginWithNonceAlreadyUsed() throws Exception {
+
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true));
+
+    // Create request object
+    UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, password, 1);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(unseenLoginDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Nonce already used", error);
   }
 
   @Test
@@ -148,6 +273,157 @@ class UnseenAuthApplicationTests {
     Assertions.assertEquals(email, response.email());
     Assertions.assertEquals(user.getNumLogins() + 1, userDB.getNumLogins());
     Assertions.assertEquals(unseenLoginDTO.nonce(), userDB.getNonce());
+  }
+
+  @Test
+  @DisplayName("Dashboard Unseen Login with user not found")
+  void dashboardUnseenLoginWithUserNotFound() throws Exception {
+    // Create request object
+    UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, password, 223456789);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/dashboard/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(unseenLoginDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Invalid credentials", error);
+  }
+
+  @Test
+  @DisplayName("Dashboard Unseen Login with bad credentials")
+  void dashboardUnseenLoginWithInvalidPassword() throws Exception {
+
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true));
+
+    // Create request object
+    UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, "wrongPassword", 223456789);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/dashboard/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(unseenLoginDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Invalid credentials", error);
+  }
+
+  @Test
+  @DisplayName("Dashboard Unseen Login with wrong provider")
+  void dashboardUnseenLoginWithWrongProvider() throws Exception {
+
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.ADMIN, AuthProvider.GOOGLE, true));
+
+    // Create request object
+    UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, password, 223456789);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/dashboard/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(unseenLoginDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Wrong provider", error);
+  }
+
+  @Test
+  @DisplayName("Dashboard Unseen Login with user not validated")
+  void dashboardUnseenLoginWithUserNotValidated() throws Exception {
+
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, false));
+
+    // Create request object
+    UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, password, 223456789);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/dashboard/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(unseenLoginDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("User not validated", error);
+  }
+
+  @Test
+  @DisplayName("Dashboard Unseen Login with nonce already used")
+  void dashboardUnseenLoginWithNonceAlreadyUsed() throws Exception {
+
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true));
+
+    // Create request object
+    UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, password, 1);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/dashboard/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(unseenLoginDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Nonce already used", error);
+  }
+
+  @Test
+  @DisplayName("Dashboard Unseen Login with not an admin user")
+  void dashboardUnseenLoginWithNotAnAdmin() throws Exception {
+
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.USER, AuthProvider.UNSEEN, true));
+
+    // Create request object
+    UnseenLoginDTO unseenLoginDTO = new UnseenLoginDTO(email, password, 223456789);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/dashboard/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(unseenLoginDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("User is not Admin", error);
   }
 
   @Test
@@ -374,7 +650,181 @@ class UnseenAuthApplicationTests {
   }
 
   @Test
-  @DisplayName("Login authorization test")
+  @DisplayName("Social Login with user in other provider")
+  void socialLoginWithUserInOtherProvider() throws Exception {
+    // Mock restTemplate
+    mockServer = MockRestServiceServer.createServer(restTemplate);
+
+    // Create a valid user in DB
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.USER, AuthProvider.FACEBOOK, true));
+
+    // Create request object
+    AuthSocialTokenDTO authSocialTokenDTO =
+        new AuthSocialTokenDTO("JWT", AuthProvider.GOOGLE, 323456789);
+
+    // Create a google response
+    People people = objectMapper.readValue(new File(RESOURCE_PATH + "/people.json"), People.class);
+
+    // Mock google server
+    mockServer
+        .expect(ExpectedCount.once(), requestTo(new URI(googleUrl)))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(
+            withStatus(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(mapper.writeValueAsString(people)));
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/social/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(authSocialTokenDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Wrong provider", error);
+  }
+
+  @Test
+  @DisplayName("Social Login with nonce already used")
+  void socialLoginWithNonceAlreadyUsed() throws Exception {
+    // Mock restTemplate
+    mockServer = MockRestServiceServer.createServer(restTemplate);
+
+    // Create a valid user in DB
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.USER, AuthProvider.GOOGLE, true));
+
+    // Create request object
+    AuthSocialTokenDTO authSocialTokenDTO = new AuthSocialTokenDTO("JWT", AuthProvider.GOOGLE, 1);
+
+    // Create a google response
+    People people = objectMapper.readValue(new File(RESOURCE_PATH + "/people.json"), People.class);
+
+    // Mock google server
+    mockServer
+        .expect(ExpectedCount.once(), requestTo(new URI(googleUrl)))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(
+            withStatus(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(mapper.writeValueAsString(people)));
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/social/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(authSocialTokenDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Nonce already used", error);
+  }
+
+  @Test
+  @DisplayName("Social Login with invalid access token")
+  void socialLoginWithInvalidAccessToken() throws Exception {
+    // Mock restTemplate
+    mockServer = MockRestServiceServer.createServer(restTemplate);
+
+    // Create a valid user in DB
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.USER, AuthProvider.GOOGLE, true));
+
+    // Create request object
+    AuthSocialTokenDTO authSocialTokenDTO =
+        new AuthSocialTokenDTO("", AuthProvider.GOOGLE, 323456789);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/social/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(authSocialTokenDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Invalid access token", error);
+  }
+
+  @Test
+  @DisplayName("Social Login with provider server error")
+  void socialLoginWithProviderServerError() throws Exception {
+    // Mock restTemplate
+    mockServer = MockRestServiceServer.createServer(restTemplate);
+
+    // Create a valid user in DB
+    UserEntity user =
+        userMutationRepository.save(
+            GenerateUser(email, password, Role.USER, AuthProvider.GOOGLE, true));
+
+    // Create request object
+    AuthSocialTokenDTO authSocialTokenDTO =
+        new AuthSocialTokenDTO("JWT", AuthProvider.GOOGLE, 323456789);
+
+    // Mock google server
+    mockServer
+        .expect(ExpectedCount.once(), requestTo(new URI(googleUrl)))
+        .andExpect(method(HttpMethod.GET))
+        .andRespond(withStatus(HttpStatus.UNAUTHORIZED));
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/social/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(authSocialTokenDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Error with Social provider API server", error);
+  }
+
+  @Test
+  @DisplayName("Social Login with provider not implemented")
+  void socialLoginWithProviderNotImplemented() throws Exception {
+    // Mock restTemplate
+    mockServer = MockRestServiceServer.createServer(restTemplate);
+
+    // Create request object
+    AuthSocialTokenDTO authSocialTokenDTO =
+        new AuthSocialTokenDTO("JWT", AuthProvider.TWITTER, 323456789);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/social/login")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(authSocialTokenDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals("Provider has not implementation yet", error);
+  }
+
+  @Test
+  @DisplayName("Authorize valid request")
   void loginAuthorization() throws Exception {
     // Create a valid user in DB
     userMutationRepository.save(
@@ -402,5 +852,35 @@ class UnseenAuthApplicationTests {
     // Checks
     Assertions.assertEquals(email, response.email());
     Assertions.assertEquals(Role.ADMIN, response.role());
+  }
+
+  @Test
+  @DisplayName("Invalid Authorize request")
+  void invalidLoginAuthorization() throws Exception {
+    // Create a valid user in DB
+    userMutationRepository.save(
+        GenerateUser(email, password, Role.ADMIN, AuthProvider.UNSEEN, true));
+
+    // Create JWT
+    String jwt = jwtService.generateJWT(email, AuthProvider.UNSEEN, Role.ADMIN) + "invalid";
+
+    // Create request object
+    AuthorizeRequestDTO requestDTO = new AuthorizeRequestDTO(jwt);
+
+    // Post /login
+    var result =
+        mockMvc
+            .perform(
+                MockMvcRequestBuilders.post("/v1/auth/authorize")
+                    .accept(MediaType.APPLICATION_JSON)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(requestDTO)))
+            .andExpect(status().isUnauthorized());
+
+    var error = result.andReturn().getResponse().getErrorMessage();
+
+    Assertions.assertEquals(
+        "JWT signature does not match locally computed signature. JWT validity cannot be asserted and should not be trusted.",
+        error);
   }
 }
