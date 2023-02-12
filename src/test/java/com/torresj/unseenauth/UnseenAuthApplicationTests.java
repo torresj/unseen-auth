@@ -1,15 +1,15 @@
 package com.torresj.unseenauth;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.torresj.unseen.entities.AuthProvider;
+import com.torresj.unseen.entities.Role;
+import com.torresj.unseen.entities.UserEntity;
+import com.torresj.unseen.repositories.mutations.UserMutationRepository;
+import com.torresj.unseen.repositories.queries.UserQueryRepository;
 import com.torresj.unseenauth.dtos.*;
 import com.torresj.unseenauth.dtos.facebook.FacebookUser;
 import com.torresj.unseenauth.dtos.facebook.Picture;
 import com.torresj.unseenauth.dtos.google.People;
-import com.torresj.unseenauth.entities.AuthProvider;
-import com.torresj.unseenauth.entities.Role;
-import com.torresj.unseenauth.entities.UserEntity;
-import com.torresj.unseenauth.repositories.mutations.UserMutationRepository;
-import com.torresj.unseenauth.repositories.queries.UserQueryRepository;
 import com.torresj.unseenauth.services.JwtService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

@@ -23,6 +23,11 @@ info:
 #Loggin
 logging:
   config: classpath:logback-spring-prod.xml
+  level:
+    org:
+      springframework:
+        core:
+          LocalVariableTableParameterNameDiscoverer: OFF
 
 # Cloud config
 spring:

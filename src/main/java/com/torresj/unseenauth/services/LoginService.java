@@ -1,12 +1,12 @@
 package com.torresj.unseenauth.services;
 
+import com.torresj.unseen.entities.AuthProvider;
+import com.torresj.unseen.entities.Role;
+import com.torresj.unseen.entities.UserEntity;
 import com.torresj.unseenauth.dtos.AuthSocialTokenDTO;
 import com.torresj.unseenauth.dtos.AuthorizeResponseDTO;
 import com.torresj.unseenauth.dtos.LoginResponseDTO;
 import com.torresj.unseenauth.dtos.UnseenLoginDTO;
-import com.torresj.unseenauth.entities.AuthProvider;
-import com.torresj.unseenauth.entities.Role;
-import com.torresj.unseenauth.entities.UserEntity;
 import com.torresj.unseenauth.exceptions.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

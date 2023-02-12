@@ -33,6 +33,7 @@
 		<jacoco-maven-plugin.version>0.8.8</jacoco-maven-plugin.version>
 		<coveralls-maven-plugin.version>4.3.0</coveralls-maven-plugin.version>
 		<jaxb-api.version>2.4.0-b180830.0359</jaxb-api.version>
+		<unseen-jpa-lib.version>1.15</unseen-jpa-lib.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -122,6 +123,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.torresj</groupId>
+			<artifactId>unseen-jpa-lib</artifactId>
+			<version>${unseen-jpa-lib.version}</version>
 		</dependency>
 
 	</dependencies>

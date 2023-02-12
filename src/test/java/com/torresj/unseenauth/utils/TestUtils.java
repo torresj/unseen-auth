@@ -1,8 +1,8 @@
 package com.torresj.unseenauth.utils;
 
-import com.torresj.unseenauth.entities.AuthProvider;
-import com.torresj.unseenauth.entities.Role;
-import com.torresj.unseenauth.entities.UserEntity;
+import com.torresj.unseen.entities.AuthProvider;
+import com.torresj.unseen.entities.Role;
+import com.torresj.unseen.entities.UserEntity;
 
 import java.time.LocalDateTime;
 

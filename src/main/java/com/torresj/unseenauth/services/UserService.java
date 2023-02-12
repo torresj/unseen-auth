@@ -1,9 +1,9 @@
 package com.torresj.unseenauth.services;
 
-import com.torresj.unseenauth.entities.UserEntity;
+import com.torresj.unseen.entities.UserEntity;
+import com.torresj.unseen.repositories.mutations.UserMutationRepository;
+import com.torresj.unseen.repositories.queries.UserQueryRepository;
 import com.torresj.unseenauth.exceptions.UserNotFoundException;
-import com.torresj.unseenauth.repositories.mutations.UserMutationRepository;
-import com.torresj.unseenauth.repositories.queries.UserQueryRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

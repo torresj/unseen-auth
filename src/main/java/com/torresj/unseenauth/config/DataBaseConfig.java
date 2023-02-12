@@ -1,9 +1,9 @@
 package com.torresj.unseenauth.config;
 
-import com.torresj.unseenauth.entities.AuthProvider;
-import com.torresj.unseenauth.entities.Role;
-import com.torresj.unseenauth.entities.UserEntity;
-import com.torresj.unseenauth.repositories.mutations.UserMutationRepository;
+import com.torresj.unseen.entities.AuthProvider;
+import com.torresj.unseen.entities.Role;
+import com.torresj.unseen.entities.UserEntity;
+import com.torresj.unseen.repositories.mutations.UserMutationRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.java.Log;
 import org.springframework.context.annotation.Bean;

@@ -1,8 +1,8 @@
 package com.torresj.unseenauth.services;
 
+import com.torresj.unseen.entities.AuthProvider;
+import com.torresj.unseen.entities.Role;
 import com.torresj.unseenauth.dtos.AuthorizeResponseDTO;
-import com.torresj.unseenauth.entities.AuthProvider;
-import com.torresj.unseenauth.entities.Role;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.extern.slf4j.Slf4j;

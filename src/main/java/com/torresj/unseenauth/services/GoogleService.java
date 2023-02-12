@@ -1,14 +1,14 @@
 package com.torresj.unseenauth.services;
 
+import com.torresj.unseen.entities.AuthProvider;
+import com.torresj.unseen.entities.Role;
+import com.torresj.unseen.entities.UserEntity;
 import com.torresj.unseenauth.dtos.AuthSocialTokenDTO;
 import com.torresj.unseenauth.dtos.LoginResponseDTO;
 import com.torresj.unseenauth.dtos.google.EmailAddress;
 import com.torresj.unseenauth.dtos.google.Name;
 import com.torresj.unseenauth.dtos.google.People;
 import com.torresj.unseenauth.dtos.google.Photo;
-import com.torresj.unseenauth.entities.AuthProvider;
-import com.torresj.unseenauth.entities.Role;
-import com.torresj.unseenauth.entities.UserEntity;
 import com.torresj.unseenauth.exceptions.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

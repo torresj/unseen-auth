@@ -1,6 +1,5 @@
 package com.torresj.unseenauth.dtos;
 
-import com.torresj.unseenauth.entities.Role;
+import com.torresj.unseen.entities.Role;
 
-public record AuthorizeResponseDTO(String email, Role role) {
-}
+public record AuthorizeResponseDTO(String email, Role role) {}
