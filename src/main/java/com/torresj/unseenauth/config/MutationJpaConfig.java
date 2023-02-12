@@ -22,7 +22,7 @@ import java.util.Objects;
 @Profile("!test && !local")
 @EnableTransactionManagement
 @EnableJpaRepositories(
-    basePackages = "com.torresj.unseenauth.repositories.mutations",
+    basePackages = "com.torresj.unseen.repositories.mutations",
     entityManagerFactoryRef = "mutationsEntityManagerFactory",
     transactionManagerRef = "mutationsTransactionManager")
 public class MutationJpaConfig {
@@ -33,7 +33,7 @@ public class MutationJpaConfig {
       EntityManagerFactoryBuilder builder) {
     return builder
         .dataSource(dataSource)
-        .packages("com.torresj.unseenauth.entities")
+        .packages("com.torresj.unseen.entities")
         .properties(jpaProperties())
         .build();
   }

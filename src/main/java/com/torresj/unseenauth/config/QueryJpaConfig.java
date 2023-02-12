@@ -21,7 +21,7 @@ import java.util.Objects;
 @Profile("!test && !local")
 @EnableTransactionManagement
 @EnableJpaRepositories(
-    basePackages = "com.torresj.unseenauth.repositories.queries",
+    basePackages = "com.torresj.unseen.repositories.queries",
     entityManagerFactoryRef = "queriesEntityManagerFactory",
     transactionManagerRef = "queriesTransactionManager")
 public class QueryJpaConfig {
@@ -30,7 +30,7 @@ public class QueryJpaConfig {
       @Qualifier("queriesDataSource") DataSource dataSource, EntityManagerFactoryBuilder builder) {
     return builder
         .dataSource(dataSource)
-        .packages("com.torresj.unseenauth.entities")
+        .packages("com.torresj.unseen.entities")
         .properties(jpaProperties())
         .build();
   }
